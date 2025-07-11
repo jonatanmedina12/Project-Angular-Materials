@@ -1,0 +1,172 @@
+// src/app/features/materials/components/material-filters/material-filters.component.scss
+.material-filters-container {
+  margin-bottom: 24px;
+
+  .filters-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+
+    i {
+      color: #1890ff;
+    }
+
+    .active-filters-count {
+      margin-left: 8px;
+    }
+  }
+
+  .filters-content {
+    .filters-form {
+      .full-width {
+        width: 100%;
+      }
+
+      ::ng-deep {
+        .ant-form-item {
+          margin-bottom: 16px;
+        }
+
+        .ant-form-item-label {
+          padding-bottom: 4px;
+          
+          > label {
+            font-weight: 500;
+            color: #262626;
+          }
+        }
+
+        .ant-select,
+        .ant-picker {
+          width: 100%;
+        }
+
+        .ant-select-selector,
+        .ant-picker {
+          border-radius: 6px;
+          transition: all 0.2s;
+
+          &:hover {
+            border-color: #40a9ff;
+          }
+        }
+
+        .ant-select-focused .ant-select-selector,
+        .ant-picker-focused {
+          border-color: #1890ff;
+          box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+      }
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 16px;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 100px;
+        height: 36px;
+      }
+    }
+  }
+
+  .active-filters-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #f0f9ff;
+    border-radius: 6px;
+    border: 1px solid #d1ecf1;
+
+    .summary-text {
+      color: #0c5460;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  // Estilos responsive
+  @media (max-width: 768px) {
+    .filters-content {
+      .filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+
+    .active-filters-summary {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .filters-header {
+      font-size: 14px;
+      
+      .active-filters-count {
+        font-size: 12px;
+      }
+    }
+
+    .filters-content {
+      ::ng-deep {
+        .ant-form-item-label {
+          font-size: 13px;
+        }
+
+        .ant-select-selector,
+        .ant-picker {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// Estilos globales para el card
+::ng-deep {
+  .material-filters-container {
+    .ant-card {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .ant-card-head {
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+
+        .ant-card-head-title {
+          padding: 12px 0;
+        }
+
+        .ant-card-extra {
+          padding: 12px 0;
+        }
+      }
+
+      .ant-card-body {
+        transition: all 0.3s ease;
+      }
+    }
+  }
+}

@@ -1,0 +1,242 @@
+<div class="material-form-container">
+  <nz-spin [nzSpinning]="loading()">
+    <nz-card 
+      [nzTitle]="isEditMode() ? 'Editar Material' : 'Crear Nuevo Material'"
+      [nzExtra]="cardExtra">
+      
+      <ng-template #cardExtra>
+        <button 
+          nz-button 
+          nzType="text" 
+          (click)="onCancel()">
+          <i nz-icon nzType="close" nzTheme="outline"></i>
+        </button>
+      </ng-template>
+
+      <form nz-form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="material-form">
+        
+        <!-- Información básica -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+            Información Básica
+          </h3>
+          
+          <div nz-row [nzGutter]="[16, 16]">
+            <!-- Nombre -->
+            <div nz-col [nzXs]="24" [nzSm]="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Nombre del Material</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('name')">
+                  <input 
+                    nz-input 
+                    formControlName="name"
+                    placeholder="Ingrese el nombre del material"
+                    [class.error]="isFieldInvalid('name')" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Tipo -->
+            <div nz-col [nzXs]="24" [nzSm]="12">
+              <nz-form-item>
+                <nz-form-label nzRequired>Tipo</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('type')">
+                  <nz-select 
+                    formControlName="type"
+                    nzPlaceHolder="Seleccionar tipo"
+                    [class.error]="isFieldInvalid('type')">
+                    <nz-option 
+                      *ngFor="let type of materialTypes" 
+                      [nzValue]="type" 
+                      [nzLabel]="type">
+                    </nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Descripción -->
+            <div nz-col [nzSpan]="24">
+              <nz-form-item>
+                <nz-form-label nzRequired>Descripción</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('description')">
+                  <textarea 
+                    nz-input 
+                    formControlName="description"
+                    placeholder="Describa las características del material"
+                    [rows]="3"
+                    [class.error]="isFieldInvalid('description')">
+                  </textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información financiera -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i nz-icon nzType="dollar" nzTheme="outline"></i>
+            Información Financiera
+          </h3>
+          
+          <div nz-row [nzGutter]="[16, 16]">
+            <!-- Precio -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label nzRequired>Precio (COP)</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('price')">
+                  <nz-input-number 
+                    formControlName="price"
+                    [nzMin]="0"
+                    [nzStep]="1000"
+                    [nzFormatter]="priceFormatter"
+                    [nzParser]="priceParser"
+                    nzPlaceHolder="0"
+                    class="full-width"
+                    [class.error]="isFieldInvalid('price')">
+                  </nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Fecha de compra -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label nzRequired>Fecha de Compra</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('purchaseDate')">
+                  <nz-date-picker 
+                    formControlName="purchaseDate"
+                    nzPlaceHolder="Seleccionar fecha"
+                    [nzFormat]="'yyyy-MM-dd'"
+                    class="full-width"
+                    [class.error]="isFieldInvalid('purchaseDate')">
+                  </nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Fecha de venta -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label>Fecha de Venta</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('saleDate')">
+                  <nz-date-picker 
+                    formControlName="saleDate"
+                    nzPlaceHolder="Fecha de venta (opcional)"
+                    [nzFormat]="'yyyy-MM-dd'"
+                    class="full-width"
+                    (ngModelChange)="validateDates()"
+                    [class.error]="isFieldInvalid('saleDate')">
+                  </nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ubicación y estado -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i nz-icon nzType="environment" nzTheme="outline"></i>
+            Ubicación y Estado
+          </h3>
+          
+          <div nz-row [nzGutter]="[16, 16]">
+            <!-- Departamento -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label nzRequired>Departamento</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('departmentCode')">
+                  <nz-select 
+                    formControlName="departmentCode"
+                    nzPlaceHolder="Seleccionar departamento"
+                    [nzLoading]="citiesLoading()"
+                    (ngModelChange)="onDepartmentChange($event)"
+                    [class.error]="isFieldInvalid('departmentCode')">
+                    <nz-option 
+                      *ngFor="let dept of departments()" 
+                      [nzValue]="dept.code" 
+                      [nzLabel]="dept.name">
+                    </nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Ciudad -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label nzRequired>Ciudad</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('cityCode')">
+                  <nz-select 
+                    formControlName="cityCode"
+                    nzPlaceHolder="Seleccionar ciudad"
+                    [nzLoading]="citiesLoading()"
+                    [class.error]="isFieldInvalid('cityCode')">
+                    <nz-option 
+                      *ngFor="let city of getFilteredCities()" 
+                      [nzValue]="city.code" 
+                      [nzLabel]="city.name">
+                    </nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <!-- Estado -->
+            <div nz-col [nzXs]="24" [nzSm]="8">
+              <nz-form-item>
+                <nz-form-label nzRequired>Estado</nz-form-label>
+                <nz-form-control [nzErrorTip]="getFieldError('status')">
+                  <nz-select 
+                    formControlName="status"
+                    nzPlaceHolder="Seleccionar estado"
+                    [class.error]="isFieldInvalid('status')">
+                    <nz-option 
+                      *ngFor="let status of materialStatuses" 
+                      [nzValue]="status.value" 
+                      [nzLabel]="status.label">
+                    </nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="form-actions">
+          <button 
+            nz-button 
+            nzType="default" 
+            type="button"
+            (click)="onCancel()">
+            <i nz-icon nzType="close" nzTheme="outline"></i>
+            Cancelar
+          </button>
+          
+          <button 
+            nz-button 
+            nzType="default" 
+            type="button"
+            (click)="onReset()">
+            <i nz-icon nzType="redo" nzTheme="outline"></i>
+            Resetear
+          </button>
+          
+          <button 
+            nz-button 
+            nzType="primary" 
+            type="submit"
+            [nzLoading]="submitting()"
+            [disabled]="materialForm.invalid">
+            <i nz-icon nzType="save" nzTheme="outline"></i>
+            {{ isEditMode() ? 'Actualizar' : 'Crear' }} Material
+          </button>
+        </div>
+      </form>
+    </nz-card>
+  </nz-spin>
+</div>

@@ -1,21 +1,32 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { en_US, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { es_ES, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
-import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient } from '@angular/common/http';
+import es from '@angular/common/locales/es';
 
-registerLocaleData(en);
+import { routes } from './app.routes';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { iconsProvider } from './icons-provider';
+
+registerLocaleData(es);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), provideClientHydration(withEventReplay()), provideNzI18n(en_US), importProvidersFrom(FormsModule), provideAnimationsAsync(), provideHttpClient()
+    provideRouter(routes),
+    //provideClientHydration(withEventReplay()),
+    provideNzI18n(es_ES),
+    importProvidersFrom(FormsModule),
+    provideAnimationsAsync(),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([errorInterceptor])
+    ),
+    iconsProvider
   ]
 };

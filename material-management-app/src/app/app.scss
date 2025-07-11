@@ -1,0 +1,161 @@
+.app-layout {
+  min-height: 100vh;
+  
+  .app-sidebar {
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    overflow: auto;
+    z-index: 1000;
+    
+    .sidebar-logo {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 16px;
+      border-radius: 6px;
+      
+      .logo-img, .logo-mini {
+        height: 32px;
+        width: auto;
+      }
+    }
+
+    ::ng-deep {
+      .ant-layout-sider-children {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ant-menu {
+        flex: 1;
+        border-right: 0;
+
+        .ant-menu-item {
+          &.ant-menu-item-selected {
+            background-color: #1890ff;
+          }
+
+          a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+          }
+        }
+
+        .ant-menu-submenu-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+      }
+    }
+  }
+
+  .inner-layout {
+    margin-left: 256px;
+    transition: margin-left 0.2s ease;
+
+    .app-header {
+      background: #fff;
+      padding: 0;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      z-index: 999;
+      position: relative;
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: 64px;
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .trigger {
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s;
+
+            &:hover {
+              color: #1890ff;
+            }
+          }
+
+          .breadcrumb {
+            margin: 0;
+          }
+        }
+
+        .header-right {
+          .welcome-text {
+            color: #666;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .app-content {
+      margin: 0;
+      background: #f0f2f5;
+      min-height: calc(100vh - 128px);
+    }
+
+    .app-footer {
+      text-align: center;
+      background: #f0f2f5;
+      color: #666;
+      font-size: 12px;
+    }
+  }
+
+  // Ajuste cuando el sidebar está colapsado
+  &:has(.app-sidebar.ant-layout-sider-collapsed) .inner-layout {
+    margin-left: 80px;
+  }
+
+  @media (max-width: 768px) {
+    .app-sidebar {
+      position: fixed;
+      z-index: 1001;
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+
+      &.mobile-open {
+        transform: translateX(0);
+      }
+    }
+
+    .inner-layout {
+      margin-left: 0;
+
+      .app-header {
+        .header-content {
+          padding: 0 16px;
+
+          .header-right {
+            .welcome-text {
+              display: none;
+            }
+          }
+        }
+      }
+
+      .app-content {
+        min-height: calc(100vh - 112px);
+      }
+    }
+
+    &:has(.app-sidebar.ant-layout-sider-collapsed) .inner-layout {
+      margin-left: 0;
+    }
+  }
+}

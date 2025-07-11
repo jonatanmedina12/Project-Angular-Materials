@@ -1,0 +1,28 @@
+ .main-layout {
+      min-height: 100vh;
+      
+      .inner-layout {
+        transition: margin-left 0.2s ease;
+
+        .app-content {
+          margin: 0;
+          background: #f0f2f5;
+          min-height: calc(100vh - 128px);
+          padding: 24px;
+        }
+      }
+    }
+
+    // Responsive adjustments
+    @media (max-width: 768px) {
+      .main-layout {
+        .inner-layout {
+          margin-left: 0 !important;
+
+          .app-content {
+            min-height: calc(100vh - 112px);
+            padding: 16px;
+          }
+        }
+      }
+    }

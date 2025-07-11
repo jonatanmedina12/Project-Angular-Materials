@@ -1,0 +1,24 @@
+ <nz-layout class="main-layout">
+      <!-- Sidebar -->
+      <app-sidebar 
+        [collapsed]="collapsed()"
+        (toggleSidebar)="toggleSidebar()">
+      </app-sidebar>
+
+      <!-- Main Layout -->
+      <nz-layout class="inner-layout" [style.margin-left]="sidebarMargin()">
+        <!-- Header -->
+        <app-header 
+          [collapsed]="collapsed()"
+          (toggleSidebar)="toggleSidebar()">
+        </app-header>
+
+        <!-- Content -->
+        <nz-content class="app-content">
+          <router-outlet></router-outlet>
+        </nz-content>
+
+        <!-- Footer -->
+        <app-footer></app-footer>
+      </nz-layout>
+    </nz-layout>

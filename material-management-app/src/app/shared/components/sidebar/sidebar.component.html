@@ -1,0 +1,108 @@
+<nz-sider 
+      nzCollapsible 
+      [nzCollapsed]="collapsed()"
+      [nzTrigger]="null"
+      nzWidth="256px"
+      class="app-sidebar">
+      
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img 
+          src="assets/logo.png" 
+          alt="Logo" 
+          [style.display]="collapsed() ? 'none' : 'block'"
+          class="logo-img">
+        <img 
+          src="assets/logo-mini.png" 
+          alt="Logo" 
+          [style.display]="collapsed() ? 'block' : 'none'"
+          class="logo-mini">
+      </div>
+
+      <!-- Navigation Menu -->
+      <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="collapsed()">
+        @if (isAuthenticated()) {
+          <!-- Dashboard/Home -->
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/materials">
+              <i nz-icon nzType="inbox" nzTheme="outline"></i>
+              <span>Materiales</span>
+            </a>
+          </li>
+          
+          <!-- Gestión (Solo para managers y admins) -->
+          @if (canAccessManagement()) {
+            <li nz-submenu nzTitle="Gestión" nzIcon="setting">
+              <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/materials/create">
+                    <i nz-icon nzType="plus" nzTheme="outline"></i>
+                    <span>Nuevo Material</span>
+                  </a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/cities">
+                    <i nz-icon nzType="environment" nzTheme="outline"></i>
+                    <span>Ciudades</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          }
+
+          <!-- Reportes -->
+          <li nz-menu-item nzMatchRouter>
+            <a routerLink="/reports">
+              <i nz-icon nzType="bar-chart" nzTheme="outline"></i>
+              <span>Reportes</span>
+            </a>
+          </li>
+
+          <!-- Administración (Solo para admins) -->
+          @if (isAdmin()) {
+            <li nz-menu-divider></li>
+            <li nz-submenu nzTitle="Administración" nzIcon="crown">
+              <ul>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/admin/users">
+                    <i nz-icon nzType="team" nzTheme="outline"></i>
+                    <span>Usuarios</span>
+                  </a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/admin/roles">
+                    <i nz-icon nzType="safety" nzTheme="outline"></i>
+                    <span>Roles</span>
+                  </a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                  <a routerLink="/admin/settings">
+                    <i nz-icon nzType="control" nzTheme="outline"></i>
+                    <span>Configuración</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          }
+
+          <!-- Mi Cuenta -->
+          <li nz-menu-divider></li>
+          <li nz-submenu nzTitle="Mi Cuenta" nzIcon="user">
+            <ul>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/profile">
+                  <i nz-icon nzType="idcard" nzTheme="outline"></i>
+                  <span>Mi Perfil</span>
+                </a>
+              </li>
+              <li nz-menu-item nzMatchRouter>
+                <a routerLink="/settings">
+                  <i nz-icon nzType="tool" nzTheme="outline"></i>
+                  <span>Configuración</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        }
+      </ul>
+    </nz-sider>

@@ -1,0 +1,58 @@
+  <nz-header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <!-- Menu toggle -->
+          <i 
+            nz-icon 
+            [nzType]="collapsed() ? 'menu-unfold' : 'menu-fold'" 
+            class="trigger"
+            (click)="onToggleSidebar()">
+          </i>
+          
+          <!-- Breadcrumb -->
+          <nz-breadcrumb class="breadcrumb">
+            @for (item of breadcrumbItems(); track $index) {
+              <nz-breadcrumb-item>
+                @if (item.icon) {
+                  <i nz-icon [nzType]="item.icon" nzTheme="outline"></i>
+                }
+                @if (item.url && $index < breadcrumbItems().length - 1) {
+                  <a [routerLink]="item.url">{{ item.label }}</a>
+                } @else {
+                  <span>{{ item.label }}</span>
+                }
+              </nz-breadcrumb-item>
+            }
+          </nz-breadcrumb>
+
+          <!-- Title for current page -->
+          <div class="page-title">
+            <h1>{{ currentPageTitle() }}</h1>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Notifications (future feature) -->
+          <div class="header-actions">
+            <button 
+              nz-button 
+              nzType="text" 
+              nzShape="circle"
+              class="action-button">
+              <i nz-icon nzType="bell" nzTheme="outline"></i>
+            </button>
+            
+            <button 
+              nz-button 
+              nzType="text" 
+              nzShape="circle"
+              class="action-button">
+              <i nz-icon nzType="search" nzTheme="outline"></i>
+            </button>
+          </div>
+
+          <!-- User authentication -->
+          <app-header-auth></app-header-auth>
+        </div>
+      </div>
+    </nz-header>

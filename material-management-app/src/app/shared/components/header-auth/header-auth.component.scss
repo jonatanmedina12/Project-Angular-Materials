@@ -1,0 +1,109 @@
+ .header-auth {
+      display: flex;
+      align-items: center;
+      height: 100%;
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.04);
+        }
+
+        .user-avatar {
+          background: #1890ff;
+        }
+
+        .user-details {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
+
+          .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+          }
+
+          .user-role {
+            font-size: 11px;
+            height: 18px;
+            line-height: 16px;
+            padding: 0 6px;
+          }
+        }
+
+        .dropdown-icon {
+          font-size: 12px;
+          color: #8c8c8c;
+          transition: transform 0.3s;
+        }
+
+        &.ant-dropdown-open .dropdown-icon {
+          transform: rotate(180deg);
+        }
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+    }
+
+    // Estilos del menú dropdown
+    ::ng-deep {
+      .user-menu-header {
+        pointer-events: none !important;
+        background: #fafafa !important;
+
+        .menu-user-info {
+          text-align: center;
+          padding: 8px 0;
+
+          .menu-user-email {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin: 4px 0;
+          }
+        }
+      }
+
+      .logout-item {
+        color: #ff4d4f !important;
+
+        &:hover {
+          background: #fff2f0 !important;
+        }
+      }
+    }
+
+    // Responsive
+    @media (max-width: 768px) {
+      .header-auth {
+        .user-info {
+          .user-details {
+            display: none;
+          }
+        }
+
+        .auth-buttons {
+          button span {
+            display: none;
+          }
+        }
+      }
+    }

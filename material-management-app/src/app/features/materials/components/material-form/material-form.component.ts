@@ -24,7 +24,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./material-form.component.scss'],
     standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     NzFormModule,
     NzInputModule,
@@ -378,5 +377,7 @@ export class MaterialFormComponent implements OnInit {
   /**
    * Parser para el campo de precio
    */
-    priceParser = (value: string) => Number(value.replace(/\$\s?|(,*)/g, ''));
+   priceParser(value: string): string {
+   return value.replace(/[^0-9.]/g, '');
+ }
 }

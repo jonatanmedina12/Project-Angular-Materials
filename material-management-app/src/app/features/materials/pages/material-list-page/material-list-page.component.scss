@@ -1,12 +1,22 @@
-.material-list-page {
-  height: 100%;
-  
-  app-material-filters {
-    display: block;
-    margin-bottom: 0;
-  }
-  
-  app-material-list {
-    display: block;
-  }
-}
+ .material-list-page {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-height: 100%;
+
+      .filters-section {
+        flex-shrink: 0;
+      }
+
+      .list-section {
+        flex: 1;
+        min-height: 0; // Para permitir scroll interno si es necesario
+      }
+    }
+
+    // Responsive design
+    @media (max-width: 768px) {
+      .material-list-page {
+        gap: 16px;
+      }
+    }

@@ -11,6 +11,7 @@ import es from '@angular/common/locales/es';
 import { routes } from './app.routes';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { iconsProvider } from './icons-provider';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 registerLocaleData(es);
 
@@ -25,7 +26,10 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([errorInterceptor])
+      withInterceptors([
+        authInterceptor,  // Debe ir primero
+        errorInterceptor
+      ])
     ),
     iconsProvider
   ]

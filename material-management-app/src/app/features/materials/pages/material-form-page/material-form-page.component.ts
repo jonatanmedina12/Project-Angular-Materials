@@ -5,7 +5,8 @@ import { MaterialFormComponent } from "../../components/material-form/material-f
   selector: 'app-material-form-page',
   templateUrl: './material-form-page.component.html',
   styleUrls: ['./material-form-page.component.scss'],
-  imports: [MaterialFormComponent]
+  imports: [MaterialFormComponent],
+  standalone: true
 })
 export class MaterialFormPageComponent implements OnInit {
 

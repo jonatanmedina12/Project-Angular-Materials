@@ -7,7 +7,8 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
   selector: 'app-error-message',
   templateUrl: './error-message.component.html',
   styleUrls: ['./error-message.component.scss'],
-  imports: [CommonModule, NzAlertModule, NzButtonModule]
+  imports: [ NzAlertModule, NzButtonModule],
+  standalone: true
 })
 export class ErrorMessageComponent  {
 

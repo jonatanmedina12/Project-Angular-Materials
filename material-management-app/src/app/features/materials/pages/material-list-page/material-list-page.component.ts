@@ -6,7 +6,8 @@ import { MaterialFiltersComponent } from "../../components/material-filters/mate
   selector: 'app-material-list-page',
   templateUrl: './material-list-page.component.html',
   styleUrls: ['./material-list-page.component.scss'],
-  imports: [MaterialListComponent, MaterialFiltersComponent]
+  imports: [MaterialListComponent, MaterialFiltersComponent],
+  standalone: true
 })
 export class MaterialListPageComponent implements OnInit {
 

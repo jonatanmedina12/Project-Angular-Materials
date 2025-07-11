@@ -20,7 +20,6 @@ import { ErrorMessageComponent } from "../../../../shared/components/error-messa
   templateUrl: './material-list.component.html',
   styleUrls: ['./material-list.component.scss'],
   imports: [
-    CommonModule,
     RouterModule,
     NzTableModule,
     NzButtonModule,

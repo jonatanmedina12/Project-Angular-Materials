@@ -1,18 +1,30 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 
+
+/**
+ * Configuración principal de rutas de la aplicación
+ */
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/materials',
+    redirectTo: 'auth',
     pathMatch: 'full'
   },
   {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes')
+      .then(r => r.authRoutes)
+  },
+  {
     path: 'materials',
-    loadChildren: () => import('./features/materials/material.routes')
-      .then(r => r.materialRoutes)
+    loadComponent: () => import('./features/materials/pages/material-list-page/material-list-page.component')
+      .then(c => c.MaterialListPageComponent),
+    canActivate: [authGuard],
+    title: 'Materiales'
   },
   {
     path: '**',
-    redirectTo: '/materials'
+    redirectTo: 'auth'
   }
 ];

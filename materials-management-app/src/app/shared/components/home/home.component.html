@@ -1,0 +1,136 @@
+<div class="home-container">
+  <!-- Header de Bienvenida -->
+  <div class="welcome-section">
+    <nz-card class="welcome-card">
+      <div class="welcome-content">
+        <div class="welcome-text">
+          <h1 class="greeting">{{ getGreeting() }}</h1>
+          <p class="date">{{ getCurrentDate() }}</p>
+          <div class="user-info">
+            <span class="last-login">Último acceso: {{ getLastLoginFormatted() }}</span>
+            <div class="user-roles">
+              @for (role of getUserRoles(); track role) {
+                <nz-tag [nzColor]="role === 'ADMIN' ? 'red' : role === 'MANAGER' ? 'orange' : 'blue'">
+                  {{ role }}
+                </nz-tag>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="welcome-icon">
+          <i nz-icon nzType="dashboard" nzTheme="outline"></i>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+
+  <!-- Estadísticas del Dashboard -->
+  <div class="stats-section">
+    <h2>Resumen del Sistema</h2>
+    <div nz-row [nzGutter]="16">
+      @for (stat of getAvailableStats(); track stat.title) {
+        <div nz-col nzXs="24" nzSm="12" nzMd="6">
+          <nz-card class="stat-card">
+            <div class="stat-content">
+              <div class="stat-icon" [style.color]="stat.color">
+                <i nz-icon [nzType]="stat.icon" nzTheme="outline"></i>
+              </div>
+              <div class="stat-info">
+                <nz-statistic 
+                  [nzValue]="stat.value" 
+                  [nzTitle]="stat.title"
+                  [nzValueStyle]="{ color: stat.color }"
+                  [nzSuffix]="stat.suffix">
+                </nz-statistic>
+              </div>
+            </div>
+          </nz-card>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Acciones Rápidas -->
+  <div class="actions-section">
+    <h2>Acciones Rápidas</h2>
+    <div nz-row [nzGutter]="16">
+      @for (action of getAvailableActions(); track action.title) {
+        <div nz-col nzXs="24" nzSm="12" nzMd="8" nzLg="6">
+          <nz-card 
+            class="action-card"
+            [nzHoverable]="true"
+            (click)="navigateTo(action.route)">
+            <div class="action-content">
+              <div class="action-icon" [style.color]="action.color">
+                <i nz-icon [nzType]="action.icon" nzTheme="outline"></i>
+              </div>
+              <div class="action-info">
+                <h3>{{ action.title }}</h3>
+                <p>{{ action.description }}</p>
+              </div>
+              <div class="action-arrow">
+                <i nz-icon nzType="arrow-right" nzTheme="outline"></i>
+              </div>
+            </div>
+          </nz-card>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Información Adicional -->
+  <div class="info-section">
+    <div nz-row [nzGutter]="16">
+      <div nz-col nzXs="24" nzMd="12">
+        <nz-card nzTitle="Actividad Reciente" class="info-card">
+          <div class="activity-list">
+            <div class="activity-item">
+              <i nz-icon nzType="plus-circle" nzTheme="outline" class="activity-icon success"></i>
+              <div class="activity-content">
+                <span class="activity-text">Material creado exitosamente</span>
+                <span class="activity-time">Hace 2 horas</span>
+              </div>
+            </div>
+            <div class="activity-item">
+              <i nz-icon nzType="edit" nzTheme="outline" class="activity-icon info"></i>
+              <div class="activity-content">
+                <span class="activity-text">Perfil actualizado</span>
+                <span class="activity-time">Ayer</span>
+              </div>
+            </div>
+            <div class="activity-item">
+              <i nz-icon nzType="user-add" nzTheme="outline" class="activity-icon warning"></i>
+              <div class="activity-content">
+                <span class="activity-text">Nuevo usuario registrado</span>
+                <span class="activity-time">Hace 3 días</span>
+              </div>
+            </div>
+          </div>
+        </nz-card>
+      </div>
+      
+      <div nz-col nzXs="24" nzMd="12">
+        <nz-card nzTitle="Enlaces Útiles" class="info-card">
+          <div class="links-list">
+            <button nz-button nzType="link" class="link-item">
+              <i nz-icon nzType="question-circle" nzTheme="outline"></i>
+              Centro de Ayuda
+            </button>
+            <button nz-button nzType="link" class="link-item">
+              <i nz-icon nzType="file-text" nzTheme="outline"></i>
+              Documentación
+            </button>
+            <button nz-button nzType="link" class="link-item">
+              <i nz-icon nzType="customer-service" nzTheme="outline"></i>
+              Soporte Técnico
+            </button>
+            <button nz-button nzType="link" class="link-item">
+              <i nz-icon nzType="bug" nzTheme="outline"></i>
+              Reportar Problema
+            </button>
+          </div>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+</div>

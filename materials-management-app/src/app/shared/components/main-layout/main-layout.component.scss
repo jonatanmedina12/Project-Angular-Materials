@@ -1,5 +1,26 @@
  .main-layout {
       min-height: 100vh;
+      position: relative;
+      
+      .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.45);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+
+        &.active {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
       
       .inner-layout {
         transition: margin-left 0.2s ease;
@@ -7,7 +28,7 @@
         .app-content {
           margin: 0;
           background: #f0f2f5;
-          min-height: calc(100vh - 128px);
+          min-height: calc(100vh - 104px); // Ajustado para el footer más compacto
           padding: 24px;
         }
       }
@@ -20,7 +41,7 @@
           margin-left: 0 !important;
 
           .app-content {
-            min-height: calc(100vh - 112px);
+            min-height: calc(100vh - 88px); // Ajustado para el footer compacto en móvil
             padding: 16px;
           }
         }

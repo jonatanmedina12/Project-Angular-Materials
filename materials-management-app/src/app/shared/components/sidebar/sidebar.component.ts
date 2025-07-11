@@ -22,9 +22,12 @@ import { AuthService } from '../../../core/services/auth.service';
 export class SidebarComponent  {
  // Inputs
   collapsed = input<boolean>(false);
+  isMobile = input<boolean>(false);
+  sidebarOpen = input<boolean>(false);
   
   // Outputs
   toggleSidebar = output<void>();
+  closeMobileSidebar = output<void>();
   
   private authService = inject(AuthService);
   
@@ -39,6 +42,15 @@ export class SidebarComponent  {
    */
   canAccessManagement(): boolean {
     return this.isManager() || this.isAdmin();
+  }
+
+  /**
+   * Maneja el click en un item del menú en móvil
+   */
+  onMenuItemClick(): void {
+    if (this.isMobile()) {
+      this.closeMobileSidebar.emit();
+    }
   }
 
 }

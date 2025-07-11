@@ -1,0 +1,158 @@
+<div class="profile-container">
+  <nz-card nzTitle="Mi Perfil">
+    <nz-tabset>
+      <!-- Pestaña de Información Personal -->
+      <nz-tab nzTitle="Información Personal">
+        <div class="profile-info">
+          <!-- Información de solo lectura -->
+          <div class="user-info-section">
+            <h3>Información de la cuenta</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Usuario:</label>
+                <span>{{ user()?.username }}</span>
+              </div>
+              <div class="info-item">
+                <label>Roles:</label>
+                <span>{{ getUserRoles() }}</span>
+              </div>
+              <div class="info-item">
+                <label>Estado:</label>
+                <span [class]="user()?.active ? 'status-active' : 'status-inactive'">
+                  {{ user()?.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+              <div class="info-item">
+                <label>Último acceso:</label>
+                <span>{{ getLastLoginFormatted() }}</span>
+              </div>
+              <div class="info-item">
+                <label>Cuenta creada:</label>
+                <span>{{ getCreatedAtFormatted() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulario de edición -->
+          <div class="edit-profile-section">
+            <h3>Editar información personal</h3>
+            <form nz-form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+              <div class="form-row">
+                <nz-form-item class="form-item">
+                  <nz-form-label nzRequired>Nombre</nz-form-label>
+                  <nz-form-control [nzValidateStatus]="isProfileFieldInvalid('firstName') ? 'error' : ''"
+                    [nzErrorTip]="getProfileFieldError('firstName')">
+                    <input nz-input formControlName="firstName" placeholder="Ingrese su nombre"
+                      [class.error]="isProfileFieldInvalid('firstName')" />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item class="form-item">
+                  <nz-form-label nzRequired>Apellido</nz-form-label>
+                  <nz-form-control [nzValidateStatus]="isProfileFieldInvalid('lastName') ? 'error' : ''"
+                    [nzErrorTip]="getProfileFieldError('lastName')">
+                    <input nz-input formControlName="lastName" placeholder="Ingrese su apellido"
+                      [class.error]="isProfileFieldInvalid('lastName')" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <nz-form-item>
+                <nz-form-label nzRequired>Correo electrónico</nz-form-label>
+                <nz-form-control [nzValidateStatus]="isProfileFieldInvalid('email') ? 'error' : ''"
+                  [nzErrorTip]="getProfileFieldError('email')">
+                  <input nz-input formControlName="email" placeholder="Ingrese su correo electrónico"
+                    [class.error]="isProfileFieldInvalid('email')" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-control>
+                  <button nz-button nzType="primary" type="submit" [nzLoading]="loading()"
+                    [disabled]="profileForm.invalid">
+                    Actualizar Perfil
+                  </button>
+                </nz-form-control>
+              </nz-form-item>
+            </form>
+          </div>
+        </div>
+      </nz-tab>
+
+      <!-- Pestaña de Cambio de Contraseña -->
+      <nz-tab nzTitle="Cambiar Contraseña">
+        <div class="password-section">
+          <h3>Cambiar contraseña</h3>
+          <p class="password-info">
+            Para cambiar tu contraseña, debes proporcionar tu contraseña actual y la nueva contraseña.
+          </p>
+
+          <form nz-form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+            <nz-form-item>
+              <nz-form-label nzRequired>Contraseña actual</nz-form-label>
+              <nz-form-control [nzValidateStatus]="isPasswordFieldInvalid('currentPassword') ? 'error' : ''"
+                [nzErrorTip]="getPasswordFieldError('currentPassword')">
+                <input nz-input type="password" formControlName="currentPassword"
+                  placeholder="Ingrese su contraseña actual"
+                  [class.error]="isPasswordFieldInvalid('currentPassword')" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired>Nueva contraseña</nz-form-label>
+              <nz-form-control [nzValidateStatus]="isPasswordFieldInvalid('newPassword') ? 'error' : ''"
+                [nzErrorTip]="getPasswordFieldError('newPassword')">
+                <input nz-input type="password" formControlName="newPassword" placeholder="Ingrese su nueva contraseña"
+                  [class.error]="isPasswordFieldInvalid('newPassword')" />
+
+                <!-- Indicador de fuerza de contraseña -->
+                @if (passwordForm.get('newPassword')?.value) {
+                <div class="password-strength-container">
+                  <div class="password-strength-bar">
+                    <div class="password-strength-fill" [style.width.%]="(getCurrentPasswordStrength().score / 5) * 100"
+                      [style.background-color]="getCurrentPasswordStrength().color">
+                    </div>
+                  </div>
+                  <span class="password-strength-label" [style.color]="getCurrentPasswordStrength().color">
+                    {{ getCurrentPasswordStrength().label }}
+                  </span>
+                </div>
+
+                <!-- Sugerencias de mejora -->
+                @if (getCurrentPasswordStrength().suggestions.length > 0) {
+                <div class="password-suggestions">
+                  <p class="suggestions-title">Para mejorar la seguridad:</p>
+                  <ul>
+                    @for (suggestion of getCurrentPasswordStrength().suggestions; track suggestion) {
+                    <li>{{ suggestion }}</li>
+                    }
+                  </ul>
+                </div>
+                }
+                }
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired>Confirmar nueva contraseña</nz-form-label>
+              <nz-form-control [nzValidateStatus]="isPasswordFieldInvalid('confirmNewPassword') ? 'error' : ''"
+                [nzErrorTip]="getPasswordFieldError('confirmNewPassword')">
+                <input nz-input type="password" formControlName="confirmNewPassword"
+                  placeholder="Confirme su nueva contraseña"
+                  [class.error]="isPasswordFieldInvalid('confirmNewPassword')" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <button nz-button nzType="primary" type="submit" [nzLoading]="passwordLoading()"
+                  [disabled]="passwordForm.invalid">
+                  Cambiar Contraseña
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+        </div>
+      </nz-tab>
+    </nz-tabset>
+  </nz-card>
+</div>

@@ -4,13 +4,14 @@ import { Department } from '../models/department.model';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CityService {
 
- private readonly baseUrl = 'http://localhost:8080/api/cities';
+ private readonly baseUrl = `${environment.apiUrl}/cities`;
   
   private citiesSignal = signal<City[]>([]);
   private departmentsSignal = signal<Department[]>([]);

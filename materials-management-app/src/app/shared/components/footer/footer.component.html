@@ -1,88 +1,46 @@
    <nz-footer class="app-footer">
       <div class="footer-content">
-        <!-- Información principal -->
+        <!-- Contenido principal del footer -->
         <div class="footer-main">
-          <div class="footer-brand">
-            <img src="assets/logo-mini.png" alt="Logo" class="footer-logo">
+          <div class="footer-left">
             <div class="brand-info">
-              <h4>Sistema de Gestión de Materiales</h4>
-              <p>Solución integral para el control y administración de materiales</p>
+              <span class="brand-name">Material Management System</span>
+              <span class="version-info">v1.0.0</span>
             </div>
           </div>
 
-          <div class="footer-stats">
+          <div class="footer-center">
             @if (isAuthenticated()) {
-              <div class="stat-item">
+              <span class="user-welcome">
                 <i nz-icon nzType="user" nzTheme="outline"></i>
-                <span>Bienvenido, {{ user()?.firstName }}</span>
-              </div>
+                Bienvenido, {{ user()?.firstName }}
+              </span>
             }
-            
-            <div class="stat-item">
-              <i nz-icon nzType="environment" nzTheme="outline"></i>
-              <span>Angular {{ angularVersion }}</span>
-            </div>
-            
-            <div class="stat-item">
-              <i nz-icon nzType="calendar" nzTheme="outline"></i>
-              <span>{{ currentYear }}</span>
+          </div>
+
+          <div class="footer-right">
+            <div class="footer-links">
+              <a href="#/help" title="Ayuda">
+                <i nz-icon nzType="question-circle" nzTheme="outline"></i>
+              </a>
+              <a href="#/documentation" title="Documentación">
+                <i nz-icon nzType="file-text" nzTheme="outline"></i>
+              </a>
+              <a href="#/support" title="Soporte">
+                <i nz-icon nzType="customer-service" nzTheme="outline"></i>
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Links y información adicional -->
-        <div class="footer-links">
-          <div class="link-group">
-            <h5>Sistema</h5>
-            <ul>
-              <li><a href="#/help">Ayuda</a></li>
-              <li><a href="#/documentation">Documentación</a></li>
-              <li><a href="#/api-docs">API Docs</a></li>
-            </ul>
-          </div>
-
-          <div class="link-group">
-            <h5>Soporte</h5>
-            <ul>
-              <li><a href="#/contact">Contacto</a></li>
-              <li><a href="#/support">Mesa de Ayuda</a></li>
-              <li><a href="#/feedback">Feedback</a></li>
-            </ul>
-          </div>
-
-          <div class="link-group">
-            <h5>Legal</h5>
-            <ul>
-              <li><a href="#/privacy">Privacidad</a></li>
-              <li><a href="#/terms">Términos</a></li>
-              <li><a href="#/cookies">Cookies</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <nz-divider></nz-divider>
-
-        <!-- Copyright -->
+        <!-- Copyright compacto -->
         <div class="footer-bottom">
-          <div class="copyright">
-            <p>
-              &copy; {{ currentYear }} Material Management System. 
-              Todos los derechos reservados.
-            </p>
-            <p class="tech-info">
-              Desarrollado con 
-              <i nz-icon nzType="heart" nzTheme="fill" class="heart-icon"></i> 
-              usando Angular {{ angularVersion }} + NG-ZORRO
-            </p>
-          </div>
-
-          <div class="footer-actions">
-            <div class="version-info">
-              <span class="version-badge">v1.0.0</span>
-              <span class="build-info">Build: {{ buildNumber }}</span>
-            </div>
-          </div>
+          <span class="copyright">
+            &copy; {{ currentYear }} Todos los derechos reservados
+          </span>
+          <span class="tech-info">
+            Angular {{ angularVersion }} + NG-ZORRO
+          </span>
         </div>
       </div>
     </nz-footer>

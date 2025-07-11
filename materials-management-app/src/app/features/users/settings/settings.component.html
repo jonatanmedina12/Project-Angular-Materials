@@ -1,0 +1,133 @@
+<div class="settings-container">
+  <nz-card nzTitle="Configuración">
+    
+    <!-- Formulario único para todas las configuraciones -->
+    <form nz-form [formGroup]="settingsForm">
+      
+      <!-- Configuraciones de Notificaciones -->
+      <div class="settings-section">
+        <h3>
+          <i nz-icon nzType="bell" nzTheme="outline"></i>
+          Notificaciones
+        </h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Notificaciones por email</label>
+            <p>Recibir notificaciones importantes por correo electrónico</p>
+          </div>
+          <nz-switch formControlName="emailNotifications"></nz-switch>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Notificaciones push</label>
+            <p>Recibir notificaciones en el navegador</p>
+          </div>
+          <nz-switch formControlName="pushNotifications"></nz-switch>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Reportes semanales</label>
+            <p>Recibir resumen semanal de actividades</p>
+          </div>
+          <nz-switch formControlName="weeklyReports"></nz-switch>
+        </div>
+      </div>
+
+      <nz-divider></nz-divider>
+
+      <!-- Configuraciones de Apariencia -->
+      <div class="settings-section">
+        <h3>
+          <i nz-icon nzType="bg-colors" nzTheme="outline"></i>
+          Apariencia
+        </h3>
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Modo oscuro</label>
+            <p>Cambiar a tema oscuro (próximamente)</p>
+          </div>
+          <nz-switch formControlName="darkMode" [nzDisabled]="true"></nz-switch>
+        </div>
+      </div>
+
+    </form>
+
+    <nz-divider></nz-divider>
+
+    <!-- Acciones de Configuración -->
+    <div class="settings-section">
+      <h3>
+        <i nz-icon nzType="setting" nzTheme="outline"></i>
+        Acciones
+      </h3>
+      <div class="actions-grid">
+        <button 
+          nz-button 
+          nzType="primary" 
+          (click)="saveSettings()"
+          [nzLoading]="loading()">
+          <i nz-icon nzType="save" nzTheme="outline"></i>
+          Guardar configuración
+        </button>
+
+        <button 
+          nz-button 
+          nzType="default" 
+          (click)="resetSettings()">
+          <i nz-icon nzType="reload" nzTheme="outline"></i>
+          Restaurar por defecto
+        </button>
+
+        <button 
+          nz-button 
+          nzType="default" 
+          (click)="downloadUserData()"
+          [nzLoading]="loading()">
+          <i nz-icon nzType="download" nzTheme="outline"></i>
+          Descargar mis datos
+        </button>
+
+        <button 
+          nz-button 
+          nzType="default" 
+          (click)="clearCache()">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+          Limpiar caché
+        </button>
+      </div>
+    </div>
+
+    <nz-divider></nz-divider>
+
+    <!-- Acciones de Cuenta -->
+    <div class="settings-section">
+      <h3>
+        <i nz-icon nzType="user" nzTheme="outline"></i>
+        Cuenta
+      </h3>
+      <div class="account-actions">
+        <button 
+          nz-button 
+          nzType="primary" 
+          nzDanger
+          (click)="logout()">
+          <i nz-icon nzType="logout" nzTheme="outline"></i>
+          Cerrar sesión
+        </button>
+
+        <button 
+          nz-button 
+          nzType="default" 
+          nzDanger
+          (click)="requestAccountDeletion()">
+          <i nz-icon nzType="delete" nzTheme="outline"></i>
+          Eliminar cuenta
+        </button>
+      </div>
+    </div>
+
+  </nz-card>
+</div>

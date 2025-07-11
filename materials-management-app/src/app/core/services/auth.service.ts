@@ -5,13 +5,14 @@ import { LoginRequest, LoginResponse, RegisterRequest } from '../models/auth.mod
 import { catchError, finalize, map, Observable, tap, throwError } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private readonly baseUrl = 'http://localhost:8080/api/auth';
+  private readonly baseUrl = environment.authUrl;
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly USER_KEY = 'current_user';
@@ -28,10 +29,15 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
   readonly loading = computed(() => this.loadingSignal());
   readonly error = computed(() => this.errorSignal());
-  readonly isAdmin = computed(() => this.user()?.role === 'ADMIN');
-  readonly isManager = computed(() => 
-    this.user()?.role === 'MANAGER' || this.user()?.role === 'ADMIN'
-  );
+  readonly isAdmin = computed(() => {
+    const user = this.user();
+    return user?.roles?.includes('ADMIN') || user?.role === 'ADMIN';
+  });
+  readonly isManager = computed(() => {
+    const user = this.user();
+    return user?.roles?.includes('MANAGER') || user?.roles?.includes('ADMIN') || 
+           user?.role === 'MANAGER' || user?.role === 'ADMIN';
+  });
 
   constructor(
     private http: HttpClient,
@@ -44,21 +50,37 @@ export class AuthService {
    * Inicializa el estado de autenticación desde localStorage
    */
   private initializeAuth(): void {
-      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-    return;
-  }
+
+    
     const token = localStorage.getItem(this.TOKEN_KEY);
     const userJson = localStorage.getItem(this.USER_KEY);
+    
 
     if (token && userJson) {
       try {
         const user = JSON.parse(userJson);
+     
+        // Verificar si el token no está expirado
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const isExpired = Date.now() >= payload.exp * 1000;
+          
+          if (isExpired) {
+            this.clearAuthData();
+            return;
+          }
+        } catch (tokenError) {
+          this.clearAuthData();
+          return;
+        }
+        
         this.tokenSignal.set(token);
         this.userSignal.set(user);
       } catch (error) {
+        console.error('❌ Error parseando datos de usuario:', error);
         this.clearAuthData();
       }
-    }
+    } 
   }
 
   /**
@@ -67,15 +89,34 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
+    
+    console.log('🔐 Intentando login para:', credentials.usernameOrEmail);
 
-    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/login`, credentials)
+    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/auth/login`, credentials)
       .pipe(
         map(response => response.data),
         tap(loginResponse => {
           this.setAuthData(loginResponse);
         }),
         catchError(error => {
-          this.handleAuthError('Error al iniciar sesión', error);
+          console.log('❌ Error en login:', error.status, error.error?.message);
+          
+          // Manejar diferentes tipos de errores de login
+          let errorMessage = 'Error al iniciar sesión';
+          
+          if (error.status === 401) {
+            errorMessage = 'Credenciales incorrectas';
+          } else if (error.status === 403) {
+            errorMessage = 'Cuenta bloqueada o sin permisos';
+          } else if (error.status === 429) {
+            errorMessage = 'Demasiados intentos. Intenta más tarde';
+          } else if (error.status === 0) {
+            errorMessage = 'Error de conexión con el servidor';
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          }
+          
+          this.errorSignal.set(errorMessage);
           return throwError(() => error);
         }),
         finalize(() => {
@@ -83,6 +124,33 @@ export class AuthService {
         })
       );
   }
+  /**
+ * Obtiene la información del usuario actual
+ */
+getCurrentUser(): Observable<User> {
+  return this.http.get<ApiResponse<User>>(`${this.baseUrl}/auth/me`)
+    .pipe(
+      map(response => response.data),
+      tap(user => {
+        this.userSignal.set(user);
+      }),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
+}
+
+/**
+ * Actualiza los datos del usuario en el signal
+ */
+updateUserData(user: User): void {
+  this.userSignal.set(user);
+  
+  // Actualizar también en localStorage si es necesario
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  }
+}
 /**
  * Verifica autenticación de forma asíncrona
  * Previene el flash durante la verificación inicial
@@ -90,7 +158,7 @@ export class AuthService {
 isAuthenticatedAsync(): Observable<boolean> {
   return new Observable(observer => {
     // Verificar si hay token en localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(this.TOKEN_KEY);
     
     if (!token) {
       observer.next(false);
@@ -125,7 +193,7 @@ register(userData: RegisterRequest): Observable<User> {
   this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<ApiResponse<User>>(`${this.baseUrl}/register`, userData)
+    return this.http.post<ApiResponse<User>>(`${this.baseUrl}/auth/register`, userData)
       .pipe(
         map(response => response.data),
         catchError(error => {
@@ -142,12 +210,19 @@ register(userData: RegisterRequest): Observable<User> {
    * Cierra la sesión del usuario
    */
   logout(): Observable<any> {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      this.clearAuthData();
+      this.router.navigate(['/auth/login']);
+      return throwError(() => new Error('localStorage no disponible'));
+    }
+    
     const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
     
-    return this.http.post(`${this.baseUrl}/logout`, { refreshToken })
+    return this.http.post(`${this.baseUrl}/auth/logout`, { refreshToken })
       .pipe(
         catchError(error => {
-          console.error('Error al cerrar sesión:', error);
+          console.error('❌ Error al cerrar sesión en el servidor:', error);
+          // Continuar con el logout local aunque falle el servidor
           return throwError(() => error);
         }),
         finalize(() => {
@@ -161,21 +236,25 @@ register(userData: RegisterRequest): Observable<User> {
    * Refresca el token de acceso
    */
   refreshToken(): Observable<LoginResponse> {
+
     const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
-     if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-      return throwError(() => new Error('No se puede acceder a localStorage'));
-    }
+    
     if (!refreshToken) {
+      this.clearAuthData();
+      this.router.navigate(['/auth/login']);
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/refresh`, { refreshToken })
+    console.log('🔄 Intentando refrescar token...');
+    
+    return this.http.post<ApiResponse<LoginResponse>>(`${this.baseUrl}/auth/refresh`, { refreshToken })
       .pipe(
         map(response => response.data),
         tap(loginResponse => {
           this.setAuthData(loginResponse);
         }),
         catchError(error => {
+          console.error('❌ Error al refrescar token:', error);
           this.clearAuthData();
           this.router.navigate(['/auth/login']);
           return throwError(() => error);
@@ -187,7 +266,7 @@ register(userData: RegisterRequest): Observable<User> {
    * Verifica si el token es válido
    */
   verifyToken(): Observable<User> {
-    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/verify`)
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/auth/validate`)
       .pipe(
         map(response => response.data),
         tap(user => {
@@ -207,7 +286,7 @@ register(userData: RegisterRequest): Observable<User> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/forgot-password`, { email })
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/auth/forgot-password`, { email })
       .pipe(
         catchError(error => {
           this.handleAuthError('Error al solicitar restablecimiento', error);
@@ -223,20 +302,43 @@ register(userData: RegisterRequest): Observable<User> {
    * Establece los datos de autenticación
    */
   private setAuthData(loginResponse: LoginResponse): void {
-   
-
-    localStorage.setItem(this.TOKEN_KEY, loginResponse.token);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, loginResponse.refreshToken);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(loginResponse.user));
+ 
     
-    this.tokenSignal.set(loginResponse.token);
-    this.userSignal.set(loginResponse.user);
+    try {
+      const accessToken = loginResponse.tokens.accessToken;
+      const refreshToken = loginResponse.tokens.refreshToken;
+      const user = loginResponse.user;
+      
+    
+      
+      localStorage.setItem(this.TOKEN_KEY, accessToken);
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      
+      this.tokenSignal.set(accessToken);
+      this.userSignal.set(user);
+      
+      
+      // Verificar que se guardó correctamente
+      const savedToken = localStorage.getItem(this.TOKEN_KEY);
+      const savedUser = localStorage.getItem(this.USER_KEY);
+  
+      
+    } catch (error) {
+      console.error('❌ Error guardando datos de autenticación:', error);
+      this.clearAuthData();
+    }
   }
 
   /**
    * Limpia los datos de autenticación
    */
   private clearAuthData(): void {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return;
+    }
+    
+    
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
@@ -244,6 +346,7 @@ register(userData: RegisterRequest): Observable<User> {
     this.tokenSignal.set(null);
     this.userSignal.set(null);
     this.errorSignal.set(null);
+    
   }
 
   /**
@@ -287,14 +390,41 @@ register(userData: RegisterRequest): Observable<User> {
    * Verifica si el usuario tiene un rol específico
    */
   hasRole(role: string): boolean {
-    return this.user()?.role === role;
+    const user = this.user();
+    return user?.roles?.includes(role) || user?.role === role || false;
   }
 
   /**
    * Verifica si el usuario tiene alguno de los roles especificados
    */
   hasAnyRole(roles: string[]): boolean {
-    const userRole = this.user()?.role;
-    return userRole ? roles.includes(userRole) : false;
+    const user = this.user();
+    if (!user) return false;
+    
+    // Verificar en el array de roles
+    if (user.roles) {
+      return user.roles.some(userRole => roles.includes(userRole));
+    }
+    
+    // Verificar en el campo role (compatibilidad hacia atrás)
+    return user.role ? roles.includes(user.role) : false;
+  }
+
+  /**
+   * Verifica si el usuario tiene un permiso específico
+   */
+  hasPermission(permission: string): boolean {
+    const user = this.user();
+    return user?.permissions?.includes(permission) || false;
+  }
+
+  /**
+   * Verifica si el usuario tiene alguno de los permisos especificados
+   */
+  hasAnyPermission(permissions: string[]): boolean {
+    const user = this.user();
+    if (!user?.permissions) return false;
+    
+    return user.permissions.some(userPermission => permissions.includes(userPermission));
   }
 }

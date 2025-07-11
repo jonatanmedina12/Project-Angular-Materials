@@ -4,7 +4,7 @@
           <!-- Menu toggle -->
           <i 
             nz-icon 
-            [nzType]="collapsed() ? 'menu-unfold' : 'menu-fold'" 
+            [nzType]="getMenuIcon()" 
             class="trigger"
             (click)="onToggleSidebar()">
           </i>

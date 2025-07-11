@@ -26,6 +26,18 @@ export const routes: Routes = [
       .then(c => c.MaterialListPageComponent),
     title: 'Materiales'
   },
+    {
+    path: 'materials/create',
+    loadComponent: () => import('./features/materials/pages/material-create-page/material-create-page.component')
+      .then(c => c.MaterialCreatePageComponent),
+    title: 'Crear Material'
+  },
+  {
+  path: 'cities',
+  loadComponent: () => import('./features/cities/components/city/city.component')
+    .then(c => c.CityComponent),
+  title: 'Gestión de Ciudades'
+},
   {
   path: 'profile',
   loadComponent: () => import('./features/users/profile/profile.component')

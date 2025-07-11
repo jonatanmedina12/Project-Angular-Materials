@@ -1,0 +1,265 @@
+// src/app/features/cities/city-management/city-management.component.scss
+
+.city-management-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      h2 {
+        margin: 0;
+        color: #1890ff;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .stats {
+        display: flex;
+        gap: 16px;
+
+        .stat-item {
+          color: #666;
+          font-size: 14px;
+
+          &.filtered {
+            color: #1890ff;
+            font-weight: 500;
+          }
+
+          strong {
+            color: #1890ff;
+          }
+        }
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+  }
+
+  .filters-card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    .search-form {
+      .filter-actions {
+        margin-top: 16px;
+        text-align: right;
+      }
+    }
+  }
+
+  .error-card {
+    margin-bottom: 20px;
+    border-left: 4px solid #ff4d4f;
+
+    .error-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .error-icon {
+        color: #ff4d4f;
+        font-size: 20px;
+      }
+
+      .error-text {
+        flex: 1;
+
+        h4 {
+          margin: 0 0 4px 0;
+          color: #ff4d4f;
+        }
+
+        p {
+          margin: 0 0 8px 0;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .no-data {
+    padding: 40px;
+    text-align: center;
+  }
+
+  // Estilos adicionales para la tabla mejorada
+  .highlighted-row {
+    background-color: #f0f9ff !important;
+    border-left: 3px solid #1890ff;
+  }
+
+  .code-tag {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+  }
+
+  .city-info {
+    .city-name {
+      color: #262626;
+      font-size: 14px;
+    }
+    
+    .city-subtitle {
+      color: #8c8c8c;
+      font-size: 12px;
+    }
+  }
+
+  .department-info {
+    .department-name {
+      color: #262626;
+      font-weight: 500;
+    }
+    
+    .department-subtitle {
+      color: #8c8c8c;
+      font-size: 12px;
+    }
+  }
+
+  .dept-code-tag {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    
+    .ant-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      
+      &:hover {
+        background-color: #f0f9ff;
+        border-color: #1890ff;
+        color: #1890ff;
+      }
+    }
+  }
+
+  // Estilos para los headers de la tabla
+  .ant-table-thead > tr > th {
+    background-color: #fafafa;
+    border-bottom: 2px solid #1890ff;
+    font-weight: 600;
+    color: #262626;
+    
+    i {
+      margin-right: 4px;
+      color: #1890ff;
+    }
+  }
+
+  // Hover effect para las filas
+  .ant-table-tbody > tr:hover > td {
+    background-color: #f5f5f5 !important;
+  }
+
+  .departments-summary {
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    .departments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+
+      .department-item {
+        padding: 16px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background: #fafafa;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: #1890ff;
+          box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+        }
+
+        .department-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+
+          .dept-tag {
+            font-weight: 500;
+          }
+
+          .dept-name {
+            font-weight: 500;
+            color: #262626;
+          }
+        }
+
+        .department-stats {
+          .cities-count {
+            color: #666;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .city-management-container {
+    padding: 12px;
+
+    .page-header {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+
+      .header-actions {
+        justify-content: center;
+      }
+    }
+
+    .departments-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Utilidades
+.full-width {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #666;
+}

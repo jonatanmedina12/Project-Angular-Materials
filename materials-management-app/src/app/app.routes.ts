@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
 /**
  * Configuración principal de rutas de la aplicación
  */
@@ -18,7 +17,6 @@ export const routes: Routes = [
     path: 'materials',
     loadComponent: () => import('./features/materials/pages/material-list-page/material-list-page.component')
       .then(c => c.MaterialListPageComponent),
-    canActivate: [authGuard],
     title: 'Materiales'
   },
   {

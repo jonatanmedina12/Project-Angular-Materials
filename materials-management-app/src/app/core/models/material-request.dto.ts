@@ -1,15 +1,13 @@
-import { City } from "./city.model";
 import { MaterialStatus } from "./material-status.enum";
 import { MaterialType } from "./MaterialType.enum";
 
-export interface Material {
-  id?: number;
+export interface MaterialRequestDto {
   name: string;
   description: string;
-  type: MaterialType;
+  type: string;
   price: number;
-  purchaseDate: Date | string;
-  saleDate?: Date | string | null;
+  purchaseDate: string; // Format: YYYY-MM-DD
+  saleDate?: string | null; // Format: YYYY-MM-DD
   status: MaterialStatus;
-  city: City;
+  cityCode: string;
 }

@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MaterialService } from '../../../../core/services/material.service';
 import { CityService } from '../../../../core/services/city.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { MaterialRequestDto } from '../../../../core/models/material-request.dto';
 
 @Component({
   selector: 'app-material-form',
@@ -132,30 +133,7 @@ export class MaterialFormComponent implements OnInit {
   private loadMaterialForEdit(id: number): void {
     this.loadingSignal.set(true);
     
-    // Simular carga del material (implementar según tu API)
-    // Aquí deberías tener un método getMaterialById en el servicio
-    setTimeout(() => {
-      // Material simulado para demo
-      const material: Material = {
-        id: id,
-        name: 'Material de prueba',
-        description: 'Descripción del material de prueba',
-        type: 'ELECTRONICO',
-        price: 150000,
-        purchaseDate: new Date('2024-01-15'),
-        saleDate: undefined,
-        status: MaterialStatus.AVAILABLE,
-        city: {
-          code: 'BOG',
-          name: 'Bogotá',
-          department: { code: 'DC', name: 'Distrito Capital' }
-        }
-      };
-      
-      this.currentMaterialSignal.set(material);
-      this.populateForm(material);
-      this.loadingSignal.set(false);
-    }, 1000);
+   
   }
 
   /**
@@ -240,15 +218,22 @@ export class MaterialFormComponent implements OnInit {
       return;
     }
 
-    const materialData: Material = {
+    // Formatear datos para el backend según la estructura esperada
+    const materialData: any = {
       name: formValue.name,
       description: formValue.description,
       type: formValue.type,
       price: formValue.price,
-      purchaseDate: formValue.purchaseDate,
-      saleDate: formValue.saleDate,
+      purchaseDate: formValue.purchaseDate instanceof Date 
+        ? formValue.purchaseDate.toISOString().split('T')[0]
+        : formValue.purchaseDate,
+      saleDate: formValue.saleDate 
+        ? (formValue.saleDate instanceof Date 
+          ? formValue.saleDate.toISOString().split('T')[0]
+          : formValue.saleDate)
+        : null,
       status: formValue.status,
-      city: selectedCity
+      cityCode: formValue.cityCode  // El backend espera cityCode, no el objeto city completo
     };
 
     if (this.isEditMode()) {
@@ -261,7 +246,7 @@ export class MaterialFormComponent implements OnInit {
   /**
    * Crea un nuevo material
    */
-  private createMaterial(material: Material): void {
+  private createMaterial(material: MaterialRequestDto): void {
     this.materialService.createMaterial(material).subscribe({
       next: (createdMaterial) => {
         this.messageService.success('Material creado exitosamente');

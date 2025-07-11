@@ -9,9 +9,9 @@ export const materialRoutes: Routes = [
     title: 'Gestión de Materiales'
   },
   {
-    path: 'create',
-    loadComponent: () => import('./pages/material-form-page/material-form-page.component')
-      .then(c => c.MaterialFormPageComponent),
+    path: 'materials/create',
+    loadComponent: () => import('./pages/material-create-page/material-create-page.component')
+      .then(c => c.MaterialCreatePageComponent),
     title: 'Crear Material'
   },
   {

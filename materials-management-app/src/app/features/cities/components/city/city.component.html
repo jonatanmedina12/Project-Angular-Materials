@@ -1,0 +1,343 @@
+<div class="city-management-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h2>
+        <i nz-icon nzType="environment" nzTheme="outline"></i>
+        Gestión de Ciudades y Departamentos
+      </h2>
+      <div class="stats">
+        <span class="stat-item">
+          <strong>{{ getStats().totalCities }}</strong> ciudades
+        </span>
+        <span class="stat-item">
+          <strong>{{ getStats().totalDepartments }}</strong> departamentos
+        </span>
+        @if (getStats().isFiltered) {
+          <span class="stat-item filtered">
+            <strong>{{ getStats().filteredCount }}</strong> filtradas
+          </span>
+        }
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        nz-button 
+        nzType="default" 
+        (click)="toggleFilters()">
+        <i nz-icon [nzType]="filtersVisible() ? 'up' : 'filter'" nzTheme="outline"></i>
+        Filtros
+      </button>
+      
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="refreshCities()">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  @if (filtersVisible()) {
+    <nz-card 
+      nzTitle="Filtros de Búsqueda" 
+      [nzExtra]="filtersExtra" 
+      class="filters-card">
+      
+      <ng-template #filtersExtra>
+        @if (hasActiveFilters()) {
+          <nz-tag nzColor="blue">Filtros Activos</nz-tag>
+        }
+      </ng-template>
+
+      <form nz-form [formGroup]="searchForm" class="search-form">
+        <div nz-row [nzGutter]="[16, 16]">
+          
+          <!-- Buscar ciudades por nombre -->
+          <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+            <nz-form-item>
+              <nz-form-label>Buscar Ciudad por Nombre</nz-form-label>
+              <nz-form-control>
+                <nz-input-group nzSuffix="searchSuffix">
+                <input 
+  nz-input 
+  formControlName="cityName"
+  placeholder="Nombre de la ciudad"
+  (keydown)="onEnterKey($event, 'city')" />
+                </nz-input-group>
+                <ng-template #searchSuffix>
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    (click)="searchCitiesByName()"
+                    [disabled]="!searchForm.get('cityName')?.value">
+                    <i nz-icon nzType="search" nzTheme="outline"></i>
+                  </button>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Filtrar por departamento -->
+          <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+            <nz-form-item>
+              <nz-form-label>Filtrar por Departamento</nz-form-label>
+              <nz-form-control>
+                <nz-input-group nzSuffix="departmentSuffix">
+                  <nz-select 
+                    formControlName="departmentCode"
+                    nzPlaceHolder="Seleccionar departamento"
+                    nzAllowClear
+                    [nzLoading]="loading()">
+                    @for (dept of departments(); track dept.code) {
+                      <nz-option 
+                        [nzValue]="dept.code" 
+                        [nzLabel]="dept.name">
+                      </nz-option>
+                    }
+                  </nz-select>
+                </nz-input-group>
+                <ng-template #departmentSuffix>
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    (click)="searchCitiesByDepartment()"
+                    [disabled]="!searchForm.get('departmentCode')?.value">
+                    <i nz-icon nzType="filter" nzTheme="outline"></i>
+                  </button>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Buscar departamentos por nombre -->
+          <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8">
+            <nz-form-item>
+              <nz-form-label>Buscar Departamento</nz-form-label>
+              <nz-form-control>
+                <nz-input-group nzSuffix="deptSearchSuffix">
+           <input 
+  nz-input 
+  formControlName="departmentName"
+  placeholder="Nombre del departamento"
+  (keydown)="onEnterKey($event, 'department')" />
+                </nz-input-group>
+                <ng-template #deptSearchSuffix>
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    (click)="searchDepartmentsByName()"
+                    [disabled]="!searchForm.get('departmentName')?.value">
+                    <i nz-icon nzType="search" nzTheme="outline"></i>
+                  </button>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="filter-actions">
+          <button 
+            nz-button 
+            nzType="default" 
+            (click)="clearFilters()"
+            [disabled]="!hasActiveFilters()">
+            <i nz-icon nzType="clear" nzTheme="outline"></i>
+            Limpiar Filtros
+          </button>
+        </div>
+      </form>
+    </nz-card>
+  }
+
+  <!-- Mensaje de error -->
+  @if (error()) {
+    <nz-card nzType="inner" class="error-card">
+      <div class="error-content">
+        <i nz-icon nzType="exclamation-circle" nzTheme="outline" class="error-icon"></i>
+        <div class="error-text">
+          <h4>Error al cargar datos</h4>
+          <p>{{ error() }}</p>
+          <button 
+            nz-button 
+            nzType="primary" 
+            nzSize="small"
+            (click)="onErrorRetry()">
+            Reintentar
+          </button>
+        </div>
+      </div>
+    </nz-card>
+  }
+
+  <!-- Tabla de ciudades -->
+  <nz-card nzTitle="Lista de Ciudades" [nzExtra]="tableExtra">
+    
+    <ng-template #tableExtra>
+      @if (selectedDepartment()) {
+        <nz-tag [nzColor]="getDepartmentTagColor(selectedDepartment()!)">
+          Filtrado por: {{ selectedDepartment() }}
+        </nz-tag>
+      }
+    </ng-template>
+
+    <nz-spin [nzSpinning]="loading()">
+      <nz-table 
+        #cityTable
+        [nzData]="filteredCities()"
+        [nzPageSize]="10"
+        [nzPageSizeOptions]="[5, 10, 20, 50]"
+        [nzShowSizeChanger]="true"
+        [nzShowQuickJumper]="true"
+        nzTableLayout="fixed"
+        [nzFrontPagination]="true"
+        [nzScroll]="{ x: '800px' }"
+        nzBordered>
+        
+        <thead>
+  <tr>
+    <th 
+      nzWidth="120px" 
+      nzColumnKey="code" 
+      [nzSortFn]="sortFunctions.code">
+      <i nz-icon nzType="key" nzTheme="outline"></i>
+      Código
+    </th>
+    <th 
+      nzWidth="200px" 
+      nzColumnKey="name" 
+      [nzSortFn]="sortFunctions.name">
+      <i nz-icon nzType="environment" nzTheme="outline"></i>
+      Ciudad
+    </th>
+    <th 
+      nzWidth="200px" 
+      nzColumnKey="department" 
+      [nzSortFn]="sortFunctions.departmentName">
+      <i nz-icon nzType="global" nzTheme="outline"></i>
+      Departamento
+    </th>
+    <th 
+      nzWidth="150px" 
+      nzColumnKey="departmentCode" 
+      [nzSortFn]="sortFunctions.departmentCode">
+      <i nz-icon nzType="tag" nzTheme="outline"></i>
+      Cód. Departamento
+    </th>
+    <th nzWidth="120px">
+      <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+      Acciones
+    </th>
+  </tr>
+</thead>
+        
+        <tbody>
+          @for (city of filteredCities(); track trackByCityCode($index, city)) {
+            <tr [class.highlighted-row]="selectedDepartment() === city.department.code">
+              <td>
+                <nz-tag nzColor="blue" class="code-tag">
+                  {{ city.code }}
+                </nz-tag>
+              </td>
+              
+              <td>
+                <div class="city-info">
+                  <strong class="city-name">{{ city.name }}</strong>
+                  <br>
+                  <small class="city-subtitle">Ciudad principal</small>
+                </div>
+              </td>
+              
+              <td>
+                <div class="department-info">
+                  <span class="department-name">{{ city.department.name }}</span>
+                  <br>
+                 <small class="department-subtitle">
+  {{ getCitiesCountByDepartment(city.department.code) }} ciudades
+</small>
+                </div>
+              </td>
+              
+              <td>
+                <nz-tag [nzColor]="getDepartmentTagColor(city.department.code)" class="dept-code-tag">
+                  {{ city.department.code }}
+                </nz-tag>
+              </td>
+              
+              <td>
+                <div class="action-buttons">
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    nz-tooltip 
+                    nzTooltipTitle="Ver ciudades del departamento"
+                    (click)="searchForm.patchValue({departmentCode: city.department.code}); searchCitiesByDepartment()">
+                    <i nz-icon nzType="eye" nzTheme="outline"></i>
+                  </button>
+                  
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    nz-tooltip 
+                    nzTooltipTitle="Información detallada"
+                    (click)="showCityDetails(city)">
+                    <i nz-icon nzType="info-circle" nzTheme="outline"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </nz-spin>
+
+    <!-- Mensaje cuando no hay datos -->
+    @if (!loading() && filteredCities().length === 0) {
+      <div class="no-data">
+        <nz-empty 
+          [nzNotFoundImage]="'simple'"
+          nzNotFoundContent="No se encontraron ciudades">
+          <ng-template #nzNotFoundFooter>
+            <button nz-button nzType="primary" (click)="refreshCities()">
+              Cargar ciudades
+            </button>
+          </ng-template>
+        </nz-empty>
+      </div>
+    }
+
+  </nz-card>
+
+  <!-- Resumen de departamentos -->
+  <nz-card nzTitle="Resumen de Departamentos" class="departments-summary">
+    <div class="departments-grid">
+      @for (dept of departments(); track dept.code) {
+        <div class="department-item" (click)="searchForm.patchValue({departmentCode: dept.code}); searchCitiesByDepartment()">
+          <div class="department-header">
+            <nz-tag [nzColor]="getDepartmentTagColor(dept.code)" class="dept-tag">
+              {{ dept.code }}
+            </nz-tag>
+            <span class="dept-name">{{ dept.name }}</span>
+          </div>
+          <div class="department-stats">
+         <span class="cities-count">
+  {{ getCitiesCountByDepartment(dept.code) }} ciudades
+</span>
+            <i nz-icon nzType="right" nzTheme="outline" class="arrow-icon"></i>
+          </div>
+        </div>
+      }
+    </div>
+  </nz-card>
+
+</div>

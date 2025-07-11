@@ -1,0 +1,12 @@
+.material-list-page {
+  height: 100%;
+  
+  app-material-filters {
+    display: block;
+    margin-bottom: 0;
+  }
+  
+  app-material-list {
+    display: block;
+  }
+}

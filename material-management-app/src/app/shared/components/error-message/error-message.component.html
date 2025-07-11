@@ -1,0 +1,22 @@
+ <nz-alert
+      [nzType]="'error'"
+      [nzMessage]="title()"
+      [nzDescription]="message()"
+      [nzCloseable]="closeable()"
+      [nzShowIcon]="true"
+      (nzOnClose)="onClose()">
+      
+      @if (showRetry()) {
+        <div nz-alert-action>
+          <button 
+            nz-button 
+            nzType="default" 
+            nzSize="small" 
+            (click)="onRetry()"
+            class="retry-button">
+            <i nz-icon nzType="reload" nzTheme="outline"></i>
+            Reintentar
+          </button>
+        </div>
+      }
+    </nz-alert>

@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MainLayoutComponent } from "./shared/components/main-layout/main-layout.component";
 import { AuthService } from './core/services/auth.service';
 import { filter } from 'rxjs';
+import { NavigationService } from './core/guards/navigation.service';
 
 @Component({
   selector: 'app-root',
@@ -12,70 +13,29 @@ import { filter } from 'rxjs';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-   protected readonly title = signal('Material Management System');
-  
-  // Signal para controlar si mostrar el layout completo
-  private showMainLayoutSignal = signal(true);
+    protected readonly title = signal('Sistema de Gestión de Materiales');
   
   private authService = inject(AuthService);
-  private router = inject(Router);
+  private navigationService = inject(NavigationService);
   
-  // Computed signals
-  readonly showMainLayout = computed(() => this.showMainLayoutSignal());
+  // Computed signals que reaccionan a los servicios
   readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  readonly isInitializing = computed(() => 
+    this.navigationService.isInitializing() || this.authService.loading()
+  );
+  readonly shouldShowLayout = computed(() => 
+    this.navigationService.shouldShowLayout() && this.isAuthenticated()
+  );
+  readonly currentUrl = computed(() => this.navigationService.currentUrl());
 
   ngOnInit(): void {
-    // Escuchar cambios de ruta para determinar si mostrar el layout
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.updateLayoutVisibility(event.url);
+    console.log('🚀 Aplicación iniciada');
+    
+    // Suscribirse a cuando la inicialización esté completa
+    this.navigationService.initializationComplete$.subscribe(isComplete => {
+      if (isComplete) {
+        console.log('✅ Inicialización completa');
+      }
     });
-    
-    // Verificar token al iniciar la aplicación si existe
-    this.initializeAuth();
-  }
-
-  /**
-   * Inicializa la autenticación verificando token existente
-   */
-  private initializeAuth(): void {
-    const token = this.authService.getToken();
-    
-    if (token) {
-      this.authService.verifyToken().subscribe({
-        next: (user) => {
-          console.log('Token válido, usuario autenticado:', user.firstName);
-        },
-        error: (error) => {
-          console.log('Token inválido o expirado, redirigiendo al login');
-          // El servicio ya maneja la limpieza y redirección
-        }
-      });
-    }
-  }
-
-  /**
-   * Actualiza la visibilidad del layout principal basado en la ruta
-   */
-  private updateLayoutVisibility(url: string): void {
-    // Rutas que no deben mostrar el layout principal
-    const authRoutes = [
-      '/auth/login', 
-      '/auth/register', 
-      '/auth/forgot-password',
-      '/auth/reset-password'
-    ];
-    
-    const specialRoutes = [
-      '/unauthorized',
-      '/404',
-      '/500'
-    ];
-    
-    const hideLayoutRoutes = [...authRoutes, ...specialRoutes];
-    const shouldHideLayout = hideLayoutRoutes.some(route => url.startsWith(route));
-    
-    this.showMainLayoutSignal.set(!shouldHideLayout);
   }
 }

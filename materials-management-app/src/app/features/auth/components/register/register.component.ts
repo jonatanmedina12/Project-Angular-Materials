@@ -30,6 +30,7 @@ import { Router } from '@angular/router';
   standalone: true
 })
 export class RegisterComponent  {
+  readonly currentYear = new Date().getFullYear();
 
  registerForm: FormGroup;
   currentStep = signal(0);

@@ -1,30 +1,57 @@
+// app.component.scss
+@import '../styles/variables';
+@import '../styles/mixins';
+
+// Spinner de inicialización global
+.app-initialization-spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: $background;
+  @include flex-center;
+  z-index: $z-index-spinner;
+  
+  .spinner-content {
+    text-align: center;
+    
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid $border-light;
+      border-top: 4px solid $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto $spacing-xl auto;
+    }
+    
+    p {
+      color: $text-secondary;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      margin: 0;
+      font-family: $font-family;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Asegurar que el router-outlet ocupe todo el espacio
 :host {
   display: block;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-// Reset global
-* {
-  box-sizing: border-box;
-}
-
-// Scrollbar styling
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+// Transiciones suaves entre rutas
+router-outlet {
+  display: block;
   
-  &:hover {
-    background: #a8a8a8;
+  + * {
+    @include fade-in-up($transition-slow);
   }
 }

@@ -1,0 +1,508 @@
+// register.component.scss
+@import '../../../../../styles/variables';
+@import '../../../../../styles/mixins';
+
+// Contenedor principal
+.register-container {
+  min-height: 100vh;
+  background: $background;
+  @include flex-center;
+  padding: $spacing-2xl;
+  font-family: $font-family;
+}
+.login-footer {
+  text-align: center;
+  
+  p {
+    color: $text-muted;
+    font-size: $font-size-sm;
+    margin: 0;
+    font-weight: $font-weight-normal;
+  }
+}
+// Wrapper del formulario
+.register-wrapper {
+  width: 100%;
+  max-width: 580px; // Más ancho para el registro
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3xl;
+  @include fade-in-up();
+}
+
+// Header del registro
+.register-header {
+  text-align: center;
+  
+  .logo {
+    margin-bottom: $spacing-2xl;
+    
+    .logo-img {
+      width: $logo-size;
+      height: $logo-size;
+      object-fit: contain;
+    }
+  }
+
+  .register-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin-bottom: $spacing-sm;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .register-subtitle {
+    font-size: $font-size-lg;
+    color: $text-secondary;
+    margin: 0;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+  }
+}
+
+// Card del formulario
+.register-card {
+  @include card-base;
+
+  :deep(.ant-card-body) {
+    padding: $spacing-4xl;
+  }
+}
+
+// Container de pasos
+.steps-container {
+  margin-bottom: $spacing-4xl;
+  
+  :deep(.ant-steps) {
+    .ant-steps-item {
+      .ant-steps-item-title {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+      }
+      
+      .ant-steps-item-description {
+        font-size: $font-size-xs;
+        color: $text-muted;
+      }
+      
+      &.ant-steps-item-active {
+        .ant-steps-item-title {
+          color: $primary-color;
+        }
+      }
+      
+      &.ant-steps-item-finish {
+        .ant-steps-item-title {
+          color: $success-color;
+        }
+        
+        .ant-steps-item-icon {
+          background-color: $success-color;
+          border-color: $success-color;
+        }
+      }
+    }
+  }
+}
+
+// Formulario con inputs uniformes
+.register-form {
+  // Estructura base para form items
+  :deep(.ant-form-item) {
+    margin-bottom: $spacing-2xl;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Labels
+  :deep(.ant-form-item-label) {
+    padding-bottom: $spacing-sm;
+    
+    > label {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  // INPUTS UNIFORMES - igual que en login
+  :deep(.ant-input-group) {
+    border-radius: $border-radius-lg;
+    border: 1.5px solid $border-light;
+    background: $card-background;
+    height: $input-height; // Altura fija para uniformidad
+    display: flex;
+    align-items: center;
+    @include transition(border-color);
+    
+    &:hover {
+      border-color: $primary-color;
+    }
+
+    &:focus-within {
+      border-color: $primary-color;
+      box-shadow: $shadow-focus;
+    }
+
+    // Iconos de prefijo - ancho fijo
+    .ant-input-group-addon {
+      background: transparent;
+      border: none;
+      color: $text-muted;
+      width: 44px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      .anticon {
+        font-size: $icon-size;
+      }
+    }
+
+    // Sufijo (toggle de contraseña) - ancho fijo
+    .ant-input-group-suffix {
+      background: transparent;
+      border: none;
+      width: 44px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  }
+
+  // Input base - NO interferir con el funcionamiento de Ant Design
+  :deep(.ant-input) {
+    font-size: $font-size-md;
+    color: $text-primary;
+    font-weight: $font-weight-normal;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    outline: none !important;
+    
+    &::placeholder {
+      color: $text-muted;
+      font-weight: $font-weight-normal;
+    }
+    
+    &.error-input {
+      background: rgb(from $error-color r g b / 0.03) !important;
+    }
+  }
+
+  // Estados de error para el grupo
+  :deep(.ant-input-group.error-input) {
+    @include error-state;
+  }
+
+  // Toggle de contraseña
+  .password-toggle {
+    cursor: pointer;
+    color: $text-muted;
+    @include transition(color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      color: $text-secondary;
+    }
+    
+    .anticon {
+      font-size: $icon-size;
+    }
+  }
+}
+
+// Contenido de cada paso
+.step-content {
+  .step-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-2xl;
+    text-align: center;
+  }
+}
+
+// Indicador de fortaleza de contraseña
+.password-strength {
+  margin-top: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .strength-bar {
+    flex: 1;
+    height: 4px;
+    background-color: $border-light;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    
+    .strength-fill {
+      height: 100%;
+      @include transition(width);
+      border-radius: 2px;
+    }
+    
+    &.weak .strength-fill {
+      width: 33%;
+      background-color: $error-color;
+    }
+    
+    &.medium .strength-fill {
+      width: 66%;
+      background-color: $warning-color;
+    }
+    
+    &.strong .strength-fill {
+      width: 100%;
+      background-color: $success-color;
+    }
+  }
+  
+  .strength-text {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    min-width: 50px;
+    
+    &.weak {
+      color: $error-color;
+    }
+    
+    &.medium {
+      color: $warning-color;
+    }
+    
+    &.strong {
+      color: $success-color;
+    }
+  }
+}
+
+// Datos de confirmación
+.confirmation-data {
+  .data-group {
+    margin-bottom: $spacing-3xl;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    h4 {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin-bottom: $spacing-lg;
+      padding-bottom: $spacing-sm;
+      border-bottom: 1px solid $border-light;
+    }
+    
+    .data-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-md 0;
+      border-bottom: 1px solid $surface;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      label {
+        font-weight: $font-weight-medium;
+        color: $text-secondary;
+        min-width: 100px;
+      }
+      
+      span {
+        color: $text-primary;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+  }
+}
+
+// Acciones del formulario
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-top: $spacing-4xl;
+  
+  :deep(.ant-btn) {
+    @include button-base;
+    height: $button-height;
+    font-size: $font-size-md;
+    padding: 0 $spacing-3xl;
+    
+    &.ant-btn-default {
+      background: $surface;
+      border-color: $border-medium;
+      color: $text-secondary;
+      
+      &:hover {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+    }
+    
+    &.ant-btn-primary {
+      background: $primary-color;
+      border-color: $primary-color;
+      @include hover-lift;
+      
+      &:hover:not(:disabled) {
+        background: $primary-hover;
+        border-color: $primary-hover;
+      }
+    }
+  }
+  
+  .register-button {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+}
+
+// Sección de login
+.login-section {
+  text-align: center;
+  margin-top: $spacing-3xl;
+  padding-top: $spacing-2xl;
+  border-top: 1px solid $border-light;
+  
+  .login-text {
+    color: $text-secondary;
+    font-size: $font-size-base;
+    margin: 0;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+    
+    .login-link {
+      color: $primary-color;
+      font-weight: $font-weight-semibold;
+      cursor: pointer;
+      @include animated-underline;
+      @include transition(color);
+      
+      &:hover {
+        color: $primary-hover;
+      }
+    }
+  }
+}
+
+// Container de errores
+.error-container {
+  margin-bottom: $spacing-2xl;
+  @include slide-in-down;
+}
+
+// Mensajes de error
+:deep(.ant-form-item-explain-error) {
+  font-size: $font-size-sm;
+  margin-top: $spacing-xs;
+  color: $error-color;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+// Responsive design
+@include respond-to(md) {
+  .register-container {
+    padding: $spacing-xl;
+  }
+  
+  .register-wrapper {
+    max-width: 520px;
+    gap: $spacing-2xl;
+  }
+  
+  .register-header {
+    .register-title {
+      font-size: $font-size-2xl;
+    }
+    
+    .register-subtitle {
+      font-size: $font-size-md;
+    }
+  }
+  
+  .confirmation-data {
+    .data-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs;
+      
+      span {
+        text-align: left;
+      }
+    }
+  }
+}
+
+@include respond-to(sm) {
+  .register-container {
+    padding: $spacing-lg;
+  }
+  
+  .register-card {
+    :deep(.ant-card-body) {
+      padding: $spacing-3xl $spacing-2xl;
+    }
+  }
+  
+  .register-wrapper {
+    max-width: 100%;
+  }
+  
+  .register-header {
+    .logo .logo-img {
+      width: $logo-size-mobile;
+      height: $logo-size-mobile;
+    }
+    
+    .register-title {
+      font-size: $font-size-xl;
+    }
+    
+    .register-subtitle {
+      font-size: $font-size-base;
+    }
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    :deep(.ant-btn) {
+      width: 100%;
+    }
+  }
+  
+  .steps-container {
+    :deep(.ant-steps) {
+      .ant-steps-item {
+        .ant-steps-item-description {
+          display: none;
+        }
+      }
+    }
+  }
+}

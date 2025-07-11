@@ -83,12 +83,46 @@ export class AuthService {
         })
       );
   }
+/**
+ * Verifica autenticación de forma asíncrona
+ * Previene el flash durante la verificación inicial
+ */
+isAuthenticatedAsync(): Observable<boolean> {
+  return new Observable(observer => {
+    // Verificar si hay token en localStorage
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      observer.next(false);
+      observer.complete();
+      return;
+    }
 
-  /**
-   * Registra un nuevo usuario
-   */
-  register(userData: RegisterRequest): Observable<User> {
-    this.loadingSignal.set(true);
+    // Verificar si el token es válido
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const isExpired = Date.now() >= payload.exp * 1000;
+      
+      if (isExpired) {
+        this.logout();
+        observer.next(false);
+      } else {
+        observer.next(true);
+      }
+    } catch (error) {
+      this.logout();
+      observer.next(false);
+    }
+    
+    observer.complete();
+  });
+}
+
+/**
+ * Registra un nuevo usuario
+ */
+register(userData: RegisterRequest): Observable<User> {
+  this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     return this.http.post<ApiResponse<User>>(`${this.baseUrl}/register`, userData)

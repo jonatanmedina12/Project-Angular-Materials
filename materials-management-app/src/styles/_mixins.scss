@@ -1,0 +1,205 @@
+// _mixins.scss
+@import 'variables';
+
+// Mixin para centrar contenido
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Mixin para transiciones
+@mixin transition($property: all, $duration: $transition-base, $easing: ease) {
+  transition: #{$property} #{$duration} #{$easing};
+}
+
+// Mixin para sombras con focus
+@mixin focus-shadow($color: $primary-color, $opacity: 0.1) {
+  &:focus-within {
+    box-shadow: 0 0 0 3px rgb(from #{$color} r g b / #{$opacity});
+  }
+}
+
+// Mixin para estados de error
+@mixin error-state {
+  border-color: $error-color;
+  background-color: rgb(from $error-color r g b / 0.03);
+  
+  &:focus-within {
+    box-shadow: $shadow-error;
+  }
+}
+
+// Mixin para botones
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  border: none;
+  border-radius: $border-radius-lg;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  @include transition();
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// Mixin para inputs
+@mixin input-base {
+  width: 100%;
+  height: $input-height;
+  padding: 0 $spacing-md;
+  border: 1.5px solid $border-light;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-md;
+  font-weight: $font-weight-normal;
+  background-color: $card-background;
+  color: $text-primary;
+  @include transition(border-color);
+  
+  &::placeholder {
+    color: $text-muted;
+  }
+  
+  &:hover {
+    border-color: $primary-color;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: $shadow-focus;
+  }
+}
+
+// Mixin para cards
+@mixin card-base {
+  background: $card-background;
+  border: 1px solid $border-light;
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-lg;
+  @include transition();
+}
+
+// Mixin para texto truncado
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Mixin para hover con elevación
+@mixin hover-lift {
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// Mixin para scrollbar personalizada
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $surface;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $border-medium;
+    border-radius: 3px;
+    
+    &:hover {
+      background: $border-dark;
+    }
+  }
+}
+
+// Mixin para animaciones de entrada
+@mixin fade-in-up($duration: $transition-slow) {
+  animation: fadeInUp #{$duration} ease-out;
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Mixin para animaciones de slide
+@mixin slide-in-down($duration: $transition-slow) {
+  animation: slideInDown #{$duration} ease;
+  
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+// Mixin para breakpoints responsive
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm {
+    @media (max-width: $breakpoint-sm) {
+      @content;
+    }
+  }
+  @else if $breakpoint == md {
+    @media (max-width: $breakpoint-md) {
+      @content;
+    }
+  }
+  @else if $breakpoint == lg {
+    @media (max-width: $breakpoint-lg) {
+      @content;
+    }
+  }
+  @else if $breakpoint == xl {
+    @media (max-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// Mixin para links con subrayado animado
+@mixin animated-underline {
+  position: relative;
+  text-decoration: none;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    @include transition(width);
+  }
+  
+  &:hover::after {
+    width: 100%;
+  }
+}

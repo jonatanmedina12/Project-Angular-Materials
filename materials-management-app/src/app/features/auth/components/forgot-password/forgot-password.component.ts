@@ -29,6 +29,7 @@ import { Router } from '@angular/router';
   standalone: true
 })
 export class ForgotPasswordComponent  {
+  readonly currentYear = new Date().getFullYear();
 
  forgotPasswordForm: FormGroup;
   emailSent = signal(false);

@@ -1,202 +1,408 @@
+// login.component.scss
+@import '../../../../../styles/variables';
+@import '../../../../../styles/mixins';
+
+// Reset básico
+* {
+  box-sizing: border-box;
+}
+
+// Spinner de inicialización
+.initialization-spinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: $background;
+  @include flex-center;
+  z-index: $z-index-spinner;
+
+  .spinner-content {
+    width: 60px;
+    height: 60px;
+    background: transparent;
+  }
+
+  // Personalización del spinner de Ant Design
+  :deep(.ant-spin-text) {
+    color: $text-secondary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    margin-top: $spacing-lg;
+  }
+
+  :deep(.ant-spin-dot) {
+    color: $primary-color;
+  }
+}
+
+// Contenedor principal
 .login-container {
   min-height: 100vh;
+  background: $background;
+  @include flex-center;
+  padding: $spacing-2xl;
+  font-family: $font-family;
+}
+
+// Wrapper del formulario
+.login-wrapper {
+  width: 100%;
+  max-width: $max-width-form;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  flex-direction: column;
+  gap: $spacing-3xl;
+  @include fade-in-up();
+}
 
-  .login-wrapper {
-    width: 100%;
-    max-width: 400px;
+// Header del login
+.login-header {
+  text-align: center;
+  
+  .logo {
+    margin-bottom: $spacing-2xl;
     
-    .login-header {
-      text-align: center;
-      margin-bottom: 32px;
+    .logo-img {
+      width: $logo-size;
+      height: $logo-size;
+      object-fit: contain;
+    }
+  }
 
-      .logo {
-        margin-bottom: 16px;
+  .login-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin-bottom: $spacing-sm;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
 
-        .logo-img {
-          height: 64px;
-          width: auto;
-        }
-      }
+  .login-subtitle {
+    font-size: $font-size-lg;
+    color: $text-secondary;
+    margin: 0;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+  }
+}
 
-      .login-title {
-        color: white;
-        font-size: 28px;
-        font-weight: 600;
-        margin: 0 0 8px 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      }
+// Card del formulario
+.login-card {
+  @include card-base;
 
-      .login-subtitle {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 16px;
-        margin: 0;
+  :deep(.ant-card-body) {
+    padding: $spacing-4xl;
+  }
+}
+
+// Formulario - Solución a los problemas de input
+.login-form {
+  // Estructura base para form items
+  :deep(.ant-form-item) {
+    margin-bottom: $spacing-2xl;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Labels
+  :deep(.ant-form-item-label) {
+    padding-bottom: $spacing-sm;
+    
+    > label {
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  :deep(.ant-input-group) {
+    border-radius: $border-radius-lg;
+    border: 1.5px solid $border-light;
+    background: $card-background;
+    height: $input-height; 
+    display: flex;
+    align-items: center;
+    @include transition(border-color);
+    
+    &:hover {
+      border-color: $primary-color;
+    }
+
+    &:focus-within {
+      border-color: $primary-color;
+      box-shadow: $shadow-focus;
+    }
+
+    // Iconos de prefijo - ancho fijo
+    .ant-input-group-addon {
+      background: transparent;
+      border: none;
+      color: $text-muted;
+      width: 44px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      .anticon {
+        font-size: $icon-size;
       }
     }
 
-    .error-container {
-      margin-bottom: 24px;
+    // Sufijo (toggle de contraseña) - ancho fijo
+    .ant-input-group-suffix {
+      background: transparent;
+      border: none;
+      width: 44px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
+  }
 
-    .login-card {
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.95);
+  :deep(.ant-input) {
+    font-size: $font-size-md;
+    color: $text-primary;
+    font-weight: $font-weight-normal;
+    border: none !important; // Importante: quitar todos los bordes del input interno
+    box-shadow: none !important; // Quitar sombras del input interno
+    background: transparent !important; // Fondo transparente
+    outline: none !important; // Quitar outline
+    
+    &::placeholder {
+      color: $text-muted;
+      font-weight: $font-weight-normal;
+    }
+    
+    // Estado de error
+    &.error-input {
+      background: rgb(from $error-color r g b / 0.03) !important;
+    }
+  }
 
-      ::ng-deep .ant-card-body {
-        padding: 32px;
-      }
+  // Estados de error para el grupo
+  :deep(.ant-input-group.error-input) {
+    @include error-state;
+  }
 
-      .login-form {
-        .error-input {
-          border-color: #ff4d4f !important;
-          box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
-        }
+  // Toggle de contraseña
+  .password-toggle {
+    cursor: pointer;
+    color: $text-muted;
+    @include transition(color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      color: $text-secondary;
+    }
+    
+    .anticon {
+      font-size: $icon-size;
+    }
+  }
+}
 
-        .password-toggle {
-          cursor: pointer;
-          color: #8c8c8c;
-          transition: color 0.3s;
-
+// Opciones de login
+.login-options {
+  margin-bottom: $spacing-2xl;
+  
+  .login-options-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    :deep(.ant-checkbox-wrapper) {
+      color: $text-secondary;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      
+      .ant-checkbox {
+        .ant-checkbox-inner {
+          border-radius: $border-radius-sm;
+          border-color: $border-light;
+          
           &:hover {
-            color: #1890ff;
+            border-color: $primary-color;
           }
         }
-
-        .login-options {
-          margin-bottom: 24px;
-
-          .login-options-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .forgot-link {
-              color: #1890ff;
-              text-decoration: none;
-              font-size: 14px;
-              cursor: pointer;
-              transition: color 0.3s;
-
-              &:hover {
-                color: #40a9ff;
-                text-decoration: underline;
-              }
-            }
-          }
-        }
-
-        .login-button {
-          height: 48px;
-          font-size: 16px;
-          font-weight: 500;
-          border-radius: 6px;
-          box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-          transition: all 0.3s;
-
-          &:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
-          }
-
-          &:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-          }
-        }
-
-        .register-section {
-          text-align: center;
-          margin-top: 16px;
-
-          .register-text {
-            color: #666;
-            font-size: 14px;
-            margin: 0;
-
-            .register-link {
-              color: #1890ff;
-              text-decoration: none;
-              font-weight: 500;
-              margin-left: 4px;
-              cursor: pointer;
-              transition: color 0.3s;
-
-              &:hover {
-                color: #40a9ff;
-                text-decoration: underline;
-              }
-            }
-          }
+        
+        &.ant-checkbox-checked .ant-checkbox-inner {
+          background-color: $primary-color;
+          border-color: $primary-color;
         }
       }
     }
-
-    .login-footer {
-      text-align: center;
-      margin-top: 24px;
-
-      p {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 12px;
-        margin: 0;
+    
+    .forgot-link {
+      color: $primary-color;
+      font-size: $font-size-base;
+      font-weight: $font-weight-semibold;
+      cursor: pointer;
+      @include animated-underline;
+      @include transition(color);
+      
+      &:hover {
+        color: $primary-hover;
       }
     }
+  }
+}
+
+// Botón de login
+.login-button {
+  @include button-base;
+  @include hover-lift;
+  height: $button-height;
+  font-size: $font-size-md;
+  background: $primary-color;
+  color: white;
+  box-shadow: $shadow-sm;
+  
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+  }
+  
+  &:focus {
+    box-shadow: $shadow-focus;
+  }
+}
+
+// Divider elegante
+:deep(.ant-divider) {
+  margin: $spacing-3xl 0 $spacing-2xl 0;
+  border-color: $border-light;
+  
+  .ant-divider-inner-text {
+    color: $text-muted;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    background: $card-background;
+    padding: 0 $spacing-lg;
+  }
+}
+
+// Sección de registro
+.register-section {
+  text-align: center;
+  
+  .register-text {
+    color: $text-secondary;
+    font-size: $font-size-base;
+    margin: 0;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+    
+    .register-link {
+      color: $primary-color;
+      font-weight: $font-weight-semibold;
+      cursor: pointer;
+      @include animated-underline;
+      @include transition(color);
+      
+      &:hover {
+        color: $primary-hover;
+      }
+    }
+  }
+}
+
+// Container de errores
+.error-container {
+  margin-bottom: $spacing-2xl;
+  @include slide-in-down;
+}
+
+// Footer
+.login-footer {
+  text-align: center;
+  
+  p {
+    color: $text-muted;
+    font-size: $font-size-sm;
+    margin: 0;
+    font-weight: $font-weight-normal;
+  }
+}
+
+// Mensajes de error
+:deep(.ant-form-item-explain-error) {
+  font-size: $font-size-sm;
+  margin-top: $spacing-xs;
+  color: $error-color;
+  font-weight: $font-weight-medium;
+  line-height: 1.4;
+}
+
+// Estados de loading
+:deep(.ant-btn-loading) {
+  .ant-btn-loading-icon {
+    margin-right: $spacing-sm;
   }
 }
 
 // Responsive design
-@media (max-width: 768px) {
+@include respond-to(md) {
   .login-container {
-    padding: 16px;
-
-    .login-wrapper {
-      max-width: 100%;
-
-      .login-header {
-        .login-title {
-          font-size: 24px;
-        }
-
-        .login-subtitle {
-          font-size: 14px;
-        }
-      }
-
-      .login-card {
-        ::ng-deep .ant-card-body {
-          padding: 24px;
-        }
-
-        .login-form {
-          .login-options {
-            .login-options-wrapper {
-              flex-direction: column;
-              gap: 12px;
-              align-items: flex-start;
-            }
-          }
-        }
-      }
+    padding: $spacing-xl;
+  }
+  
+  .login-wrapper {
+    gap: $spacing-2xl;
+  }
+  
+  .login-header {
+    .login-title {
+      font-size: $font-size-2xl;
+    }
+    
+    .login-subtitle {
+      font-size: $font-size-md;
     }
   }
 }
 
-@media (max-width: 480px) {
+@include respond-to(sm) {
   .login-container {
-    padding: 12px;
-
-    .login-wrapper {
-      .login-card {
-        ::ng-deep .ant-card-body {
-          padding: 20px;
-        }
-      }
+    padding: $spacing-lg;
+  }
+  
+  .login-card {
+    :deep(.ant-card-body) {
+      padding: $spacing-3xl $spacing-2xl;
+    }
+  }
+  
+  .login-header {
+    .logo .logo-img {
+      width: $logo-size-mobile;
+      height: $logo-size-mobile;
+    }
+    
+    .login-title {
+      font-size: $font-size-xl;
+    }
+    
+    .login-subtitle {
+      font-size: $font-size-base;
+    }
+  }
+  
+  .login-options {
+    .login-options-wrapper {
+      flex-direction: column;
+      gap: $spacing-md;
+      align-items: flex-start;
     }
   }
 }

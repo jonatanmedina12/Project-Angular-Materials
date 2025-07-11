@@ -4,11 +4,11 @@ import { authGuard } from './core/guards/auth.guard';
  * Configuración principal de rutas de la aplicación
  */
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'auth',
-    pathMatch: 'full'
-  },
+{
+  path: '',
+  redirectTo: '/auth/login', // Cambiar a ruta específica
+  pathMatch: 'full'
+},
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes')

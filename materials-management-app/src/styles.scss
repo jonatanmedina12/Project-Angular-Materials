@@ -1,136 +1,267 @@
-/* You can add global styles to this file, and also import other style files */
-/* Estilos globales actualizados para Angular 20 */
+// styles.scss - Archivo principal de estilos globales
+// Importar variables y mixins primero
+@import './styles/variables';
+@import './styles/mixins';
 
-// Importar estilos de ng-zorro-antd (ruta corregida)
-@import 'ng-zorro-antd/ng-zorro-antd.min.css';
+// Importar estilos base
+@import './styles/base';
 
-// Reset básico
+// Importar overrides de Ant Design
+@import './styles/ant-overrides';
+
+
+// Configuración global adicional
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  // Prevenir scroll horizontal
+  overflow-x: hidden;
+  
+  // Optimización de fuentes
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Configuración de scrollbars globales
 * {
-  box-sizing: border-box;
+  @include custom-scrollbar;
 }
 
-// Estilos base
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #f0f2f5;
-  height: 100%;
+// Configuración de selección de texto
+::selection {
+  background-color: rgb(from $primary-color r g b / 0.2);
+  color: $text-primary;
 }
 
-// Clases utilitarias
-.full-width {
-  width: 100% !important;
+::-moz-selection {
+  background-color: rgb(from $primary-color r g b / 0.2);
+  color: $text-primary;
 }
 
-.text-center {
-  text-align: center;
+// Configuración para elementos con focus
+*:focus {
+  outline: none;
 }
 
-.text-right {
-  text-align: right;
+*:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
 }
 
-.text-muted {
-  color: #999;
-  font-size: 0.875rem;
+// Configuración de transiciones globales para elementos interactivos
+a,
+button,
+input,
+textarea,
+select {
+  @include transition();
 }
 
-// Espaciado
-.mt-1 { margin-top: 8px; }
-.mt-2 { margin-top: 16px; }
-.mt-3 { margin-top: 24px; }
-.mb-1 { margin-bottom: 8px; }
-.mb-2 { margin-bottom: 16px; }
-.mb-3 { margin-bottom: 24px; }
-
-// Estilos específicos para material list
-.material-list-container {
-  padding: 24px;
-  
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding: 16px 0;
-    
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      
-      h2 {
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      
-      .material-count {
-        color: #666;
-        font-size: 14px;
-        font-weight: normal;
-      }
-    }
-    
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-  }
-  
-  .material-name {
-    font-weight: 500;
-    cursor: pointer;
-  }
-  
-  .price {
-    font-weight: 600;
-    color: #52c41a;
-  }
-  
-  .error-message {
-    margin-top: 16px;
+// Configuración para reducir movimiento para usuarios con preferencias de accesibilidad
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-// Estilos para filtros
-.material-filters-container {
-  margin-bottom: 16px;
-  
-  .filters-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
-    .active-filters-count {
-      margin-left: auto;
-    }
+// Configuración para modo oscuro (preparación futura)
+@media (prefers-color-scheme: dark) {
+  // Variables para modo oscuro (comentadas por ahora)
+  /*
+  :root {
+    --background: #0f172a;
+    --card-background: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-light: #334155;
+  }
+  */
+}
+
+// Configuración para impresión
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
   }
   
-  .filters-form {
-    .filter-actions {
-      margin-top: 16px;
-      display: flex;
-      gap: 8px;
-    }
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
   }
   
-  .active-filters-summary {
-    padding: 12px 16px;
-    background-color: #f6ffed;
-    border: 1px solid #b7eb8f;
-    border-radius: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    .summary-text {
-      color: #389e0d;
-      font-size: 14px;
-    }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+// Clases de utilidad adicionales
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: $primary-color;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: $border-radius-sm;
+  z-index: 1000;
+  
+  &:focus {
+    top: 6px;
+  }
+}
+
+// Clases de loading y estados
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: wait;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+// Configuración para elementos que necesitan z-index específico
+.modal-backdrop {
+  z-index: $z-index-modal - 1;
+}
+
+.modal {
+  z-index: $z-index-modal;
+}
+
+.tooltip {
+  z-index: $z-index-tooltip;
+}
+
+.dropdown {
+  z-index: $z-index-dropdown;
+}
+
+// Configuración para elementos flotantes
+.floating-element {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// Configuración para elementos sticky
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-dropdown;
+  background: $card-background;
+  border-bottom: 1px solid $border-light;
+}
+
+// Configuración para contenedores con scroll
+.scrollable {
+  overflow-y: auto;
+  max-height: 100%;
+  @include custom-scrollbar;
+}
+
+// Configuración para elementos que se expanden
+.expandable {
+  @include transition(max-height, $transition-slow);
+  overflow: hidden;
+  
+  &.collapsed {
+    max-height: 0;
+  }
+}
+
+// Configuración para grids responsivos
+.responsive-grid {
+  display: grid;
+  gap: $spacing-2xl;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  
+  @include respond-to(sm) {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+}
+
+// Configuración para contenedores centrados
+.container {
+  width: 100%;
+  max-width: $max-width-content;
+  margin: 0 auto;
+  padding: 0 $spacing-2xl;
+  
+  @include respond-to(md) {
+    padding: 0 $spacing-xl;
+  }
+  
+  @include respond-to(sm) {
+    padding: 0 $spacing-lg;
+  }
+}
+
+// Configuración para separadores visuales
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    $border-light,
+    transparent
+  );
+  margin: $spacing-4xl 0;
+}
+
+// Configuración para elementos con animaciones de entrada
+.animate-in {
+  @include fade-in-up();
+}
+
+.animate-in-delay {
+  @include fade-in-up();
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+// Configuración para elementos de carga diferida
+.lazy-load {
+  opacity: 0;
+  @include transition(opacity, $transition-slow);
+  
+  &.loaded {
+    opacity: 1;
   }
 }

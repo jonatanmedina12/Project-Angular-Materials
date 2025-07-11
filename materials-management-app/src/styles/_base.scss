@@ -1,0 +1,400 @@
+// _base.scss
+@import 'variables';
+@import 'mixins';
+
+// Reset global básico
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Configuración del HTML base
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Configuración del body
+body {
+  margin: 0;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  color: $text-primary;
+  background-color: $background;
+  line-height: 1.6;
+}
+
+// Configuración de focus para accesibilidad
+:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// Configuración de links globales
+a {
+  color: $primary-color;
+  text-decoration: none;
+  @include transition(color);
+  
+  &:hover {
+    color: $primary-hover;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Configuración de botones globales
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Configuración de inputs globales
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Configuración de imágenes
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// Configuración de listas
+ul,
+ol {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 0.25rem;
+}
+
+// Configuración de encabezados
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: $font-weight-semibold;
+  line-height: 1.2;
+  color: $text-primary;
+}
+
+h1 {
+  font-size: $font-size-3xl;
+}
+
+h2 {
+  font-size: $font-size-2xl;
+}
+
+h3 {
+  font-size: $font-size-xl;
+}
+
+h4 {
+  font-size: $font-size-lg;
+}
+
+h5 {
+  font-size: $font-size-md;
+}
+
+h6 {
+  font-size: $font-size-base;
+}
+
+// Configuración de párrafos
+p {
+  margin: 0;
+  line-height: 1.6;
+  color: $text-secondary;
+}
+
+// Configuración de código
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.875em;
+  background-color: $surface;
+  padding: 0.125rem 0.25rem;
+  border-radius: $border-radius-sm;
+  color: $text-primary;
+}
+
+pre {
+  background-color: $surface;
+  padding: 1rem;
+  border-radius: $border-radius-lg;
+  overflow-x: auto;
+  @include custom-scrollbar;
+  
+  code {
+    background: none;
+    padding: 0;
+  }
+}
+
+// Configuración de tablas
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid $border-light;
+}
+
+th {
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  background-color: $surface;
+}
+
+// Configuración de formularios
+fieldset {
+  border: 1px solid $border-light;
+  border-radius: $border-radius-lg;
+  padding: 1rem;
+  margin: 0;
+}
+
+legend {
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  padding: 0 0.5rem;
+}
+
+// Configuración de elementos de bloque
+blockquote {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 4px solid $primary-color;
+  color: $text-secondary;
+  font-style: italic;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: $border-light;
+  margin: 1.5rem 0;
+}
+
+// Configuración de elementos inline
+mark {
+  background-color: #fef3c7;
+  padding: 0.125rem 0.25rem;
+  border-radius: $border-radius-sm;
+}
+
+small {
+  font-size: 0.875em;
+  color: $text-muted;
+}
+
+// Utilidades de display
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+.d-inline {
+  display: inline !important;
+}
+
+.d-inline-block {
+  display: inline-block !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+.d-inline-flex {
+  display: inline-flex !important;
+}
+
+.d-grid {
+  display: grid !important;
+}
+
+// Utilidades de flexbox
+.flex-row {
+  flex-direction: row !important;
+}
+
+.flex-column {
+  flex-direction: column !important;
+}
+
+.justify-start {
+  justify-content: flex-start !important;
+}
+
+.justify-center {
+  justify-content: center !important;
+}
+
+.justify-end {
+  justify-content: flex-end !important;
+}
+
+.justify-between {
+  justify-content: space-between !important;
+}
+
+.justify-around {
+  justify-content: space-around !important;
+}
+
+.align-start {
+  align-items: flex-start !important;
+}
+
+.align-center {
+  align-items: center !important;
+}
+
+.align-end {
+  align-items: flex-end !important;
+}
+
+.align-stretch {
+  align-items: stretch !important;
+}
+
+// Utilidades de texto
+.text-left {
+  text-align: left !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-justify {
+  text-align: justify !important;
+}
+
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+
+.text-lowercase {
+  text-transform: lowercase !important;
+}
+
+.text-capitalize {
+  text-transform: capitalize !important;
+}
+
+.text-primary {
+  color: $text-primary !important;
+}
+
+.text-secondary {
+  color: $text-secondary !important;
+}
+
+.text-muted {
+  color: $text-muted !important;
+}
+
+.text-error {
+  color: $error-color !important;
+}
+
+.text-success {
+  color: $success-color !important;
+}
+
+// Utilidades de espaciado
+.m-0 { margin: 0 !important; }
+.m-1 { margin: $spacing-xs !important; }
+.m-2 { margin: $spacing-sm !important; }
+.m-3 { margin: $spacing-md !important; }
+.m-4 { margin: $spacing-lg !important; }
+.m-5 { margin: $spacing-xl !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: $spacing-xs !important; }
+.p-2 { padding: $spacing-sm !important; }
+.p-3 { padding: $spacing-md !important; }
+.p-4 { padding: $spacing-lg !important; }
+.p-5 { padding: $spacing-xl !important; }
+
+// Utilidades de ancho y alto
+.w-100 { width: 100% !important; }
+.h-100 { height: 100% !important; }
+.mw-100 { max-width: 100% !important; }
+.mh-100 { max-height: 100% !important; }
+
+// Utilidades de posición
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+// Utilidades de overflow
+.overflow-hidden { overflow: hidden !important; }
+.overflow-auto { overflow: auto !important; }
+.overflow-scroll { overflow: scroll !important; }
+
+// Utilidades de border radius
+.rounded-sm { border-radius: $border-radius-sm !important; }
+.rounded { border-radius: $border-radius-md !important; }
+.rounded-lg { border-radius: $border-radius-lg !important; }
+.rounded-xl { border-radius: $border-radius-xl !important; }
+.rounded-full { border-radius: 50% !important; }
+
+// Utilidades de sombra
+.shadow-sm { box-shadow: $shadow-sm !important; }
+.shadow { box-shadow: $shadow-md !important; }
+.shadow-lg { box-shadow: $shadow-lg !important; }
+.shadow-xl { box-shadow: $shadow-xl !important; }
+.shadow-none { box-shadow: none !important; }

@@ -201,7 +201,18 @@ private authService = inject(AuthService);
     if (!protectedRoute) return true; // Ruta no protegida por roles
 
     const allowedRoles = this.roleProtectedRoutes[protectedRoute];
-    return allowedRoles.includes(user.role);
+    
+    // Verificar usando el nuevo array de roles
+    if (user.roles && user.roles.length > 0) {
+      return user.roles.some(userRole => allowedRoles.includes(userRole));
+    }
+    
+    // Compatibilidad hacia atrás con el campo role
+    if (user.role) {
+      return allowedRoles.includes(user.role);
+    }
+    
+    return false;
   }
 
   /**
@@ -291,9 +302,7 @@ private authService = inject(AuthService);
    */
   isRouteProtected(url: string): boolean {
     return !this.isPublicRoute(url);
-  }
-
-  /**
+  }  /**
    * Obtiene las rutas permitidas para el usuario actual
    */
   getAllowedRoutes(): string[] {
@@ -305,11 +314,21 @@ private authService = inject(AuthService);
     // Agregar rutas basadas en rol
     Object.keys(this.roleProtectedRoutes).forEach(route => {
       const allowedRoles = this.roleProtectedRoutes[route];
-      if (allowedRoles.includes(user.role)) {
-        allowedRoutes.push(route);
+      
+      // Verificar usando el nuevo array de roles
+      if (user.roles && user.roles.length > 0) {
+        const hasAccess = user.roles.some(userRole => allowedRoles.includes(userRole));
+        if (hasAccess) {
+          allowedRoutes.push(route);
+        }
+      } else if (user.role) {
+        // Compatibilidad hacia atrás con el campo role
+        if (allowedRoles.includes(user.role)) {
+          allowedRoutes.push(route);
+        }
       }
     });
-
+    
     return allowedRoutes;
   }
 
@@ -335,6 +354,46 @@ private authService = inject(AuthService);
   }
 
   /**
+   * Verifica si el usuario tiene un permiso específico para acceder a una ruta
+   */
+  hasPermissionForRoute(url: string, permission: string): boolean {
+    const user = this.authService.user();
+    if (!user) return false;
+    
+    return this.authService.hasPermission(permission);
+  }
+
+  /**
+   * Verifica si el usuario actual es admin
+   */
+  isCurrentUserAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  /**
+   * Verifica si el usuario actual es manager o admin
+   */
+  isCurrentUserManager(): boolean {
+    return this.authService.isManager();
+  }
+
+  /**
+   * Obtiene los roles del usuario actual
+   */
+  getCurrentUserRoles(): string[] {
+    const user = this.authService.user();
+    return user?.roles || [];
+  }
+
+  /**
+   * Obtiene los permisos del usuario actual
+   */
+  getCurrentUserPermissions(): string[] {
+    const user = this.authService.user();
+    return user?.permissions || [];
+  }
+
+  /**
    * Obtiene la URL de retorno desde los query params
    */
   private getReturnUrl(): string | null {
@@ -344,6 +403,46 @@ private authService = inject(AuthService);
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Maneja errores de navegación (como rutas no encontradas)
+   */
+  handleNavigationError(url: string): void {
+    console.log('⚠️ Error de navegación detectado:', url);
+    
+    // Si el usuario está autenticado pero la ruta no existe, ir a 404
+    if (this.authService.isAuthenticated()) {
+      console.log('ℹ️ Usuario autenticado, redirigiendo a página 404');
+      this.isNavigatingSignal.set(true);
+      this.router.navigate(['/404']).finally(() => {
+        this.isNavigatingSignal.set(false);
+      });
+    } else {
+      // Si no está autenticado, redirigir al login
+      console.log('ℹ️ Usuario no autenticado, redirigiendo al login');
+      this.redirectToLogin(url);
+    }
+  }
+
+  /**
+   * Verifica si una URL es válida dentro de la aplicación
+   */
+  isValidRoute(url: string): boolean {
+    // Lista de rutas válidas conocidas
+    const validRoutes = [
+      '/materials',
+      '/materials/create',
+      '/materials/edit',
+      '/profile',
+      '/settings',
+      '/admin',
+      '/users',
+      '/reports',
+      ...this.publicRoutes
+    ];
+    
+    return validRoutes.some(route => url.startsWith(route));
   }
 
 }

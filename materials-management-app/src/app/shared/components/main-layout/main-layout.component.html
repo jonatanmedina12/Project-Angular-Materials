@@ -1,8 +1,18 @@
  <nz-layout class="main-layout">
+      <!-- Overlay para móvil -->
+      <div 
+        class="mobile-overlay" 
+        [class.active]="isMobile() && sidebarOpen()"
+        (click)="closeMobileSidebar()">
+      </div>
+
       <!-- Sidebar -->
       <app-sidebar 
         [collapsed]="collapsed()"
-        (toggleSidebar)="toggleSidebar()">
+        [isMobile]="isMobile()"
+        [sidebarOpen]="sidebarOpen()"
+        (toggleSidebar)="toggleSidebar()"
+        (closeMobileSidebar)="closeMobileSidebar()">
       </app-sidebar>
 
       <!-- Main Layout -->
@@ -10,6 +20,7 @@
         <!-- Header -->
         <app-header 
           [collapsed]="collapsed()"
+          [isMobile]="isMobile()"
           (toggleSidebar)="toggleSidebar()">
         </app-header>
 

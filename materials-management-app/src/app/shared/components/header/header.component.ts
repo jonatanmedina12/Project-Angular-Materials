@@ -12,6 +12,12 @@ interface BreadcrumbItem {
   icon?: string;
   url?: string;
 }
+interface RouteConfig {
+  segments: string[];
+  breadcrumb: BreadcrumbItem[];
+  title: string;
+}
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -24,23 +30,24 @@ interface BreadcrumbItem {
     NzButtonModule,
     RouterModule,
     HeaderAuthComponent
-],
+  ],
   standalone: true
 })
-export class HeaderComponent  {
+export class HeaderComponent {
 
-    // Inputs
+  // Inputs
   collapsed = input<boolean>(false);
-  
+  isMobile = input<boolean>(false);
+
   // Outputs
   toggleSidebar = output<void>();
-  
+
   private router = inject(Router);
   private authService = inject(AuthService);
 
   // Computed para elementos del breadcrumb
   breadcrumbItems = computed(() => this.getBreadcrumbItems());
-  
+
   // Computed para el título de la página actual
   currentPageTitle = computed(() => this.getPageTitle());
 
@@ -52,73 +59,97 @@ export class HeaderComponent  {
   }
 
   /**
+   * Obtiene el ícono apropiado para el botón del menú
+   */
+  getMenuIcon(): string {
+    if (this.isMobile()) {
+      return 'menu'; // En móvil siempre muestra el ícono de menú
+    }
+    return this.collapsed() ? 'menu-unfold' : 'menu-fold';
+  }
+
+  /**
    * Obtiene los elementos del breadcrumb basado en la ruta actual
    */
   private getBreadcrumbItems(): BreadcrumbItem[] {
     const url = this.router.url;
-    const segments = url.split('/').filter((segment: any) => segment);
-    
-    const items: BreadcrumbItem[] = [
-      { label: 'Inicio', icon: 'home', url: '/materials' }
-    ];
+    const segments = url.split('/').filter(segment => segment);
 
-    if (segments.includes('materials')) {
-      items.push({ label: 'Materiales', icon: 'inbox', url: '/materials' });
-      
-      if (segments.includes('create')) {
-        items.push({ label: 'Crear Material', icon: 'plus' });
-      } else if (segments.includes('edit')) {
-        items.push({ label: 'Editar Material', icon: 'edit' });
-      }
-    } else if (segments.includes('admin')) {
-      items.push({ label: 'Administración', icon: 'crown', url: '/admin' });
-      
-      if (segments.includes('users')) {
-        items.push({ label: 'Usuarios', icon: 'team' });
-      } else if (segments.includes('roles')) {
-        items.push({ label: 'Roles', icon: 'safety' });
-      }
-    } else if (segments.includes('profile')) {
-      items.push({ label: 'Mi Perfil', icon: 'user' });
-    } else if (segments.includes('settings')) {
-      items.push({ label: 'Configuración', icon: 'setting' });
-    } else if (segments.includes('reports')) {
-      items.push({ label: 'Reportes', icon: 'bar-chart' });
+    // Buscar configuración exacta
+    const exactMatch = this.routeConfigs.find(config =>
+      config.segments.length === segments.length &&
+      config.segments.every((segment, index) => segments[index] === segment)
+    );
+
+    if (exactMatch) {
+      return exactMatch.breadcrumb;
     }
 
-    return items;
-  }
+    // Buscar configuración parcial
+    const partialMatch = this.routeConfigs.find(config =>
+      config.segments.every((segment, index) => segments[index] === segment)
+    );
 
+    if (partialMatch) {
+      return partialMatch.breadcrumb;
+    }
+
+    // Fallback por defecto
+    return [{ label: 'Inicio', icon: 'home', url: '/home' }];
+  }
+  // Configuración de rutas centralizada
+  private routeConfigs: RouteConfig[] = [
+    {
+      segments: ['home'],
+      breadcrumb: [{ label: 'Inicio', icon: 'home' }],
+      title: 'Dashboard'
+    },
+    {
+      segments: ['materials'],
+      breadcrumb: [
+        { label: 'Inicio', icon: 'home', url: '/home' },
+        { label: 'Materiales', icon: 'inbox' }
+      ],
+      title: 'Gestión de Materiales'
+    },
+    {
+      segments: ['materials', 'create'],
+      breadcrumb: [
+        { label: 'Inicio', icon: 'home', url: '/home' },
+        { label: 'Materiales', icon: 'inbox', url: '/materials' },
+        { label: 'Crear Material', icon: 'plus' }
+      ],
+      title: 'Crear Material'
+    },
+    {
+      segments: ['profile'],
+      breadcrumb: [
+        { label: 'Inicio', icon: 'home', url: '/home' },
+        { label: 'Mi Perfil', icon: 'user' }
+      ],
+      title: 'Mi Perfil'
+    },
+    {
+      segments: ['settings'],
+      breadcrumb: [
+        { label: 'Inicio', icon: 'home', url: '/home' },
+        { label: 'Configuración', icon: 'setting' }
+      ],
+      title: 'Configuración'
+    }
+  ];
   /**
-   * Obtiene el título de la página actual
-   */
+  * Obtiene el título de la página actual
+  */
   private getPageTitle(): string {
     const url = this.router.url;
-    const segments = url.split('/').filter((segment: any) => segment);
-    
-    if (segments.includes('materials')) {
-      if (segments.includes('create')) {
-        return 'Crear Material';
-      } else if (segments.includes('edit')) {
-        return 'Editar Material';
-      }
-      return 'Gestión de Materiales';
-    } else if (segments.includes('admin')) {
-      if (segments.includes('users')) {
-        return 'Gestión de Usuarios';
-      } else if (segments.includes('roles')) {
-        return 'Gestión de Roles';
-      }
-      return 'Panel de Administración';
-    } else if (segments.includes('profile')) {
-      return 'Mi Perfil';
-    } else if (segments.includes('settings')) {
-      return 'Configuración';
-    } else if (segments.includes('reports')) {
-      return 'Reportes';
-    }
-    
-    return 'Dashboard';
-  }
+    const segments = url.split('/').filter(segment => segment);
 
+    const matchedConfig = this.routeConfigs.find(config =>
+      config.segments.every((segment, index) => segments[index] === segment)
+    );
+
+    return matchedConfig?.title || 'Dashboard';
+
+  }
 }

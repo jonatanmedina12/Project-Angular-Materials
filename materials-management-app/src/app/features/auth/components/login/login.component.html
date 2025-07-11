@@ -43,16 +43,16 @@
         
         <!-- Campo Usuario -->
         <nz-form-item class="input-field">
-          <nz-form-label nzRequired>Usuario</nz-form-label>
+          <nz-form-label nzRequired>Usuario o correo</nz-form-label>
           <nz-form-control 
-            [nzErrorTip]="hasFieldError('username') ? getFieldError('username') : ''">
+            [nzErrorTip]="hasFieldError('usernameOrEmail') ? getFieldError('usernameOrEmail') : ''">
             <nz-input-group nzPrefixIcon="user">
               <input 
                 nz-input 
-                formControlName="username" 
+                formControlName="usernameOrEmail" 
                 placeholder="Tu nombre de usuario"
                 autocomplete="username"
-                [class.error-input]="hasFieldError('username')">
+                [class.error-input]="hasFieldError('usernameOrEmail')">
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>

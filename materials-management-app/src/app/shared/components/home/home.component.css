@@ -1,0 +1,110 @@
+.home-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 64px);
+
+  .welcome-section {
+    margin-bottom: 24px;
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      
+      .welcome-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        
+        .welcome-text {
+          .greeting {
+            margin: 0 0 8px 0;
+            font-size: 32px;
+            font-weight: 600;
+          }
+          
+          .date {
+            margin: 0 0 16px 0;
+            font-size: 16px;
+            opacity: 0.8;
+                color: white;
+          }
+          
+          .user-info {
+            .last-login {
+              display: block;
+              font-size: 14px;
+              opacity: 0.8;
+              margin-bottom: 8px;
+            }
+          }
+        }
+        
+        .welcome-icon {
+          font-size: 64px;
+          opacity: 0.3;
+        }
+      }
+    }
+  }
+
+  .stats-section, .actions-section, .info-section {
+    margin-bottom: 24px;
+    
+    h2 {
+      margin-bottom: 16px;
+      color: #333;
+    }
+  }
+
+  .stat-card {
+    .stat-content {
+      display: flex;
+      align-items: center;
+      
+      .stat-icon {
+        font-size: 32px;
+        margin-right: 16px;
+      }
+    }
+  }
+
+  .action-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .action-content {
+      display: flex;
+      align-items: center;
+      
+      .action-icon {
+        font-size: 24px;
+        margin-right: 12px;
+      }
+      
+      .action-info {
+        flex: 1;
+        
+        h3 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+        }
+        
+        p {
+          margin: 0;
+          color: white;
+          font-size: 14px;
+        }
+      }
+      
+      .action-arrow {
+        color: #999;
+      }
+    }
+  }
+}

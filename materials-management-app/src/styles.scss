@@ -49,15 +49,35 @@ body {
 *:focus-visible {
   outline: 2px solid $primary-color;
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
-// Configuración de transiciones globales para elementos interactivos
-a,
-button,
-input,
-textarea,
-select {
-  @include transition();
+// Estilos globales para sidebar móvil
+body {
+  &.sidebar-open {
+    overflow: hidden; // Prevenir scroll cuando el sidebar está abierto
+    position: fixed; // Fijar el body
+    width: 100%;
+    
+    @media (max-width: 768px) {
+      // Solo aplicar en móvil
+      touch-action: none; // Prevenir gestos de scroll
+    }
+  }
+}
+
+// Mejorar la experiencia en dispositivos táctiles
+@media (max-width: 768px) {
+  // Asegurar que el viewport sea consistente
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  // Optimizar el tap en dispositivos móviles
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 // Configuración para reducir movimiento para usuarios con preferencias de accesibilidad

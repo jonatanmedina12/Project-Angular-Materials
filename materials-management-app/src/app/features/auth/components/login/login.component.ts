@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
    */
   private initializeForm(): void {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      usernameOrEmail: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       remember: [false]
     });
@@ -87,7 +87,7 @@ export class LoginComponent implements OnInit {
     this.authService.clearError();
 
     const credentials = {
-      username: this.loginForm.get('username')?.value,
+      usernameOrEmail: this.loginForm.get('usernameOrEmail')?.value,
       password: this.loginForm.get('password')?.value,
       remember: this.loginForm.get('remember')?.value
     };
@@ -132,7 +132,7 @@ export class LoginComponent implements OnInit {
     const field = this.loginForm.get(fieldName);
     
     if (field?.errors?.['required']) {
-      return `${fieldName === 'username' ? 'Usuario' : 'Contraseña'} es requerido`;
+      return `${fieldName === 'usernameOrEmail' ? 'Usuario' : 'Contraseña'} es requerido`;
     }
     
     if (field?.errors?.['minlength']) {

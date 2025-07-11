@@ -97,6 +97,12 @@
           padding: 0 16px;
 
           .header-left {
+            .trigger {
+              font-size: 20px;
+              padding: 12px;
+              margin-right: 8px;
+            }
+
             .page-title {
               display: none;
             }
@@ -123,6 +129,11 @@
       .app-header {
         .header-content {
           .header-left {
+            .trigger {
+              font-size: 22px;
+              padding: 16px 12px;
+            }
+
             .breadcrumb {
               display: none;
             }

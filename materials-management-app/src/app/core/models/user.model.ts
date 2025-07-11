@@ -6,8 +6,15 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
-  isActive: boolean;
-  createdAt: Date;
-  lastLogin?: Date;
+  fullName: string;
+  active: boolean;
+  emailVerified: boolean;
+  accountLocked: boolean;
+  lastLogin: string;
+  createdAt: string;
+  roles: string[];
+  permissions: string[];
+  // Mantener compatibilidad con el campo role existente
+  role?: UserRole;
+  isActive?: boolean;
 }

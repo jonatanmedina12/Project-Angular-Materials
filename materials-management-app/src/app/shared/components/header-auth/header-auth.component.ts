@@ -40,7 +40,26 @@ export class HeaderAuthComponent  {
    * Obtiene el color del rol
    */
   getRoleColor(): string {
-    const role = this.user()?.role;
+    const user = this.user();
+    if (!user) return 'default';
+    
+    // Usar el nuevo array de roles
+    if (user.roles && user.roles.length > 0) {
+      const primaryRole = user.roles[0]; // Usar el primer rol como principal
+      switch (primaryRole) {
+        case 'ADMIN':
+          return 'red';
+        case 'MANAGER':
+          return 'orange';
+        case 'USER':
+          return 'blue';
+        default:
+          return 'default';
+      }
+    }
+    
+    // Compatibilidad hacia atrás
+    const role = user.role;
     switch (role) {
       case 'ADMIN':
         return 'red';
@@ -57,7 +76,26 @@ export class HeaderAuthComponent  {
    * Obtiene la etiqueta del rol
    */
   getRoleLabel(): string {
-    const role = this.user()?.role;
+    const user = this.user();
+    if (!user) return 'Usuario';
+    
+    // Usar el nuevo array de roles
+    if (user.roles && user.roles.length > 0) {
+      const primaryRole = user.roles[0]; // Usar el primer rol como principal
+      switch (primaryRole) {
+        case 'ADMIN':
+          return 'Administrador';
+        case 'MANAGER':
+          return 'Gerente';
+        case 'USER':
+          return 'Usuario';
+        default:
+          return 'Usuario';
+      }
+    }
+    
+    // Compatibilidad hacia atrás
+    const role = user.role;
     switch (role) {
       case 'ADMIN':
         return 'Administrador';

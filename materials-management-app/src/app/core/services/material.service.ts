@@ -4,12 +4,13 @@ import { MaterialFilters } from '../models/material-filters.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MaterialService {
- private readonly baseUrl = 'http://localhost:8080/api/materials';
+ private readonly baseUrl = `${environment.apiUrl}/materials`;
   
   // Signals para manejo de estado
   private materialsSignal = signal<Material[]>([]);

@@ -1,0 +1,160 @@
+<div class="material-list-container">
+  <!-- Header con acciones -->
+  <div class="list-header">
+    <div class="header-title">
+      <h2>
+        <i nz-icon nzType="inbox" nzTheme="outline"></i>
+        Gestión de Materiales
+      </h2>
+      <span class="material-count">{{ materials().length }} materiales</span>
+    </div>
+    
+    <div class="header-actions">
+    <button 
+  nz-button 
+  nzType="default" 
+  nzSize="default"
+  ngSkipHydration
+  (click)="refreshMaterials()">
+  <i nz-icon nzType="reload" nzTheme="outline"></i>
+  <span>Actualizar</span>  <!-- Usar span en lugar de texto directo -->
+</button>
+
+      <button 
+        nz-button 
+        nzType="primary" 
+        nzSize="default"
+        routerLink="/materials/create">
+        <i nz-icon nzType="plus" nzTheme="outline"></i>
+        Nuevo Material
+      </button>
+      
+      <button 
+        nz-button 
+        nzType="primary" 
+        nzDanger
+        nzSize="default"
+        [disabled]="!hasSelectedMaterials()"
+        nz-popconfirm
+        nzPopconfirmTitle="¿Estás seguro de eliminar los materiales seleccionados?"
+        (nzOnConfirm)="deleteSelectedMaterials()">
+        <i nz-icon nzType="delete" nzTheme="outline"></i>
+        <span>Eliminar ({{ selectedMaterials().length }})</span>
+      </button>
+    </div>
+  </div>
+  @if (error()) {
+  <div class="error-message">
+    <app-error-message
+      [title]="'Error al cargar materiales'"
+      [message]="error()!"
+      [closeable]="true"
+      [showRetry]="true"
+      (close)="onErrorClose()"
+      (retry)="onErrorRetry()">
+    </app-error-message>
+  </div>
+}
+  <!-- Tabla de materiales -->
+  <nz-spin [nzSpinning]="loading()">
+    <nz-table 
+      #materialTable
+      [nzData]="materials()"
+      [nzPageSize]="10"
+      [nzPageSizeOptions]="[5, 10, 20, 50]"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+      nzTableLayout="fixed"
+      [nzFrontPagination]="true"
+      [nzScroll]="{ x: '1200px' }">
+      
+      <thead>
+        <tr>
+          <th 
+            nzWidth="60px" 
+            [nzChecked]="materialTable.nzData.length > 0 && selectedMaterials().length === materialTable.nzData.length"
+            [nzIndeterminate]="selectedMaterials().length > 0 && selectedMaterials().length < materialTable.nzData.length"
+            (nzCheckedChange)="onSelectionChange($event ? materials() : [])">
+          </th>
+          <th nzWidth="150px" nzColumnKey="name" [nzSortFn]="true">Nombre</th>
+          <th nzWidth="120px" nzColumnKey="type" [nzSortFn]="true">Tipo</th>
+          <th nzWidth="120px" nzColumnKey="price" [nzSortFn]="true">Precio</th>
+          <th nzWidth="130px" nzColumnKey="purchaseDate" [nzSortFn]="true">Fecha Compra</th>
+          <th nzWidth="100px" nzColumnKey="status" [nzSortFn]="true">Estado</th>
+          <th nzWidth="150px">Ciudad</th>
+          <th nzWidth="150px">Acciones</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        @for (material of materials(); track material.id) {
+          <tr>
+            <td 
+              [nzChecked]="selectedMaterials().includes(material)"
+              (nzCheckedChange)="onMaterialSelectionChange(material, $event)">
+            </td>
+            
+            <td>
+              <span 
+                nz-tooltip 
+                [nzTooltipTitle]="material.description"
+                class="material-name">
+                {{ material.name }}
+              </span>
+            </td>
+            
+            <td>
+              <nz-tag [nzColor]="getTypeTagColor(material.type)">
+                {{ material.type }}
+              </nz-tag>
+            </td>
+            
+            <td>
+              <span class="price">{{ formatPrice(material.price) }}</span>
+            </td>
+            
+            <td>
+              <span>{{ formatDate(material.purchaseDate) }}</span>
+            </td>
+            
+            <td>
+              <nz-tag [nzColor]="getStatusTagColor(material.status)">
+                {{ getStatusText(material.status) }}
+              </nz-tag>
+            </td>
+            
+            <td>
+              <span>{{ material.city.name }}</span>
+              <br>
+              <small class="text-muted">{{ material.city.department.name }}</small>
+            </td>
+            
+            <td>
+              <button 
+                nz-button 
+                nzType="link" 
+                nzSize="small"
+                [routerLink]="['/materials/edit', material.id]"
+                nz-tooltip 
+                nzTooltipTitle="Editar material">
+                <i nz-icon nzType="edit" nzTheme="outline"></i>
+              </button>
+              
+              <button 
+                nz-button 
+                nzType="link" 
+                nzSize="small"
+                [routerLink]="['/materials/view', material.id]"
+                nz-tooltip 
+                nzTooltipTitle="Ver detalles">
+                <i nz-icon nzType="eye" nzTheme="outline"></i>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </nz-spin>
+
+
+</div>

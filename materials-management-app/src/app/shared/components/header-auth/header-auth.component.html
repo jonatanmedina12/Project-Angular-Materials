@@ -1,0 +1,84 @@
+<div class="header-auth">
+      @if (isAuthenticated()) {
+        <!-- Usuario autenticado -->
+        <div class="user-info" nz-dropdown [nzDropdownMenu]="userMenu" nzTrigger="click">
+          <nz-avatar 
+            [nzSize]="32"
+            nzIcon="user"
+            class="user-avatar">
+          </nz-avatar>
+          
+          <div class="user-details">
+            <span class="user-name">{{ user()?.firstName }} {{ user()?.lastName }}</span>
+            <nz-tag [nzColor]="getRoleColor()" class="user-role">
+              {{ getRoleLabel() }}
+            </nz-tag>
+          </div>
+          
+          <i nz-icon nzType="down" nzTheme="outline" class="dropdown-icon"></i>
+        </div>
+
+        <!-- Menú dropdown del usuario -->
+        <nz-dropdown-menu #userMenu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item class="user-menu-header">
+              <div class="menu-user-info">
+                <strong>{{ user()?.firstName }} {{ user()?.lastName }}</strong>
+                <div class="menu-user-email">{{ user()?.email }}</div>
+                <nz-tag [nzColor]="getRoleColor()" nzSize="small">
+                  {{ getRoleLabel() }}
+                </nz-tag>
+              </div>
+            </li>
+            
+            <li nz-menu-divider></li>
+            
+            <li nz-menu-item routerLink="/profile">
+              <i nz-icon nzType="user" nzTheme="outline"></i>
+              <span>Mi Perfil</span>
+            </li>
+            
+            <li nz-menu-item routerLink="/settings">
+              <i nz-icon nzType="setting" nzTheme="outline"></i>
+              <span>Configuración</span>
+            </li>
+            
+            @if (isAdmin()) {
+              <li nz-menu-divider></li>
+              <li nz-menu-item routerLink="/admin">
+                <i nz-icon nzType="crown" nzTheme="outline"></i>
+                <span>Panel Admin</span>
+              </li>
+            }
+            
+            <li nz-menu-divider></li>
+            
+            <li nz-menu-item (click)="logout()" class="logout-item">
+              <i nz-icon nzType="logout" nzTheme="outline"></i>
+              <span>Cerrar Sesión</span>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      } @else {
+        <!-- Usuario no autenticado -->
+        <div class="auth-buttons">
+          <button 
+            nz-button 
+            nzType="default" 
+            nzSize="small"
+            routerLink="/auth/login">
+            <i nz-icon nzType="login" nzTheme="outline"></i>
+            <span>Iniciar Sesión</span>
+          </button>
+          
+          <button 
+            nz-button 
+            nzType="primary" 
+            nzSize="small"
+            routerLink="/auth/register">
+            <i nz-icon nzType="user-add" nzTheme="outline"></i>
+            <span>Registrarse</span>
+          </button>
+        </div>
+      }
+    </div>

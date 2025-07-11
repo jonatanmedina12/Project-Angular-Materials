@@ -1,0 +1,273 @@
+<div class="register-container">
+  <div class="register-wrapper">
+    <div class="register-header">
+      <div class="logo">
+        <img src="assets/logo.png" alt="Logo" class="logo-img">
+      </div>
+      <h1 class="register-title">Crear Cuenta</h1>
+      <p class="register-subtitle">Sistema de Gestión de Materiales</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    @if (error()) {
+      <div class="error-container">
+        <app-error-message
+          [title]="'Error en el registro'"
+          [message]="error()!"
+          [closeable]="true"
+          [showRetry]="false"
+          (close)="onErrorClose()">
+        </app-error-message>
+      </div>
+    }
+
+    <nz-card class="register-card" [nzBordered]="false">
+      <!-- Steps indicator -->
+      <div class="steps-container">
+        <nz-steps [nzCurrent]="currentStep()" nzSize="small">
+          @for (step of steps; track $index) {
+            <nz-step 
+              [nzTitle]="step.title" 
+              [nzDescription]="step.description">
+            </nz-step>
+          }
+        </nz-steps>
+      </div>
+
+      <form nz-form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        
+        <!-- Paso 1: Información Personal -->
+        @if (currentStep() === 0) {
+          <div class="step-content">
+            <h3 class="step-title">Información Personal</h3>
+            
+            <!-- Nombre -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Nombre</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('firstName') ? getFieldError('firstName') : ''">
+                <nz-input-group nzPrefixIcon="user">
+                  <input 
+                    nz-input 
+                    formControlName="firstName" 
+                    placeholder="Ingrese su nombre"
+                    autocomplete="given-name"
+                    [class.error-input]="hasFieldError('firstName')">
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Apellido -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Apellido</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('lastName') ? getFieldError('lastName') : ''">
+                <nz-input-group nzPrefixIcon="user">
+                  <input 
+                    nz-input 
+                    formControlName="lastName" 
+                    placeholder="Ingrese su apellido"
+                    autocomplete="family-name"
+                    [class.error-input]="hasFieldError('lastName')">
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Email -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Email</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('email') ? getFieldError('email') : ''">
+                <nz-input-group nzPrefixIcon="mail">
+                  <input 
+                    nz-input 
+                    type="email"
+                    formControlName="email" 
+                    placeholder="ejemplo@correo.com"
+                    autocomplete="email"
+                    [class.error-input]="hasFieldError('email')">
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        }
+
+        <!-- Paso 2: Credenciales -->
+        @if (currentStep() === 1) {
+          <div class="step-content">
+            <h3 class="step-title">Credenciales de Acceso</h3>
+            
+            <!-- Usuario -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Usuario</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('username') ? getFieldError('username') : ''">
+                <nz-input-group nzPrefixIcon="user">
+                  <input 
+                    nz-input 
+                    formControlName="username" 
+                    placeholder="Nombre de usuario"
+                    autocomplete="username"
+                    [class.error-input]="hasFieldError('username')">
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Contraseña -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Contraseña</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('password') ? getFieldError('password') : ''">
+                <nz-input-group nzPrefixIcon="lock">
+                  <input 
+                    nz-input 
+                    [type]="passwordVisible() ? 'text' : 'password'"
+                    formControlName="password" 
+                    placeholder="Ingrese su contraseña"
+                    autocomplete="new-password"
+                    [class.error-input]="hasFieldError('password')">
+                  <span 
+                    nz-input-suffix
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()">
+                    <i 
+                      nz-icon 
+                      [nzType]="passwordVisible() ? 'eye-invisible' : 'eye'" 
+                      nzTheme="outline">
+                    </i>
+                  </span>
+                </nz-input-group>
+                
+                <!-- Indicador de fortaleza -->
+                @if (registerForm.get('password')?.value) {
+                  <div class="password-strength">
+                    <div class="strength-bar" [class]="getPasswordStrength()">
+                      <div class="strength-fill"></div>
+                    </div>
+                    <span class="strength-text" [class]="getPasswordStrength()">
+                      @switch (getPasswordStrength()) {
+                        @case ('weak') { Débil }
+                        @case ('medium') { Media }
+                        @case ('strong') { Fuerte }
+                      }
+                    </span>
+                  </div>
+                }
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Confirmar Contraseña -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Confirmar Contraseña</nz-form-label>
+              <nz-form-control 
+                [nzErrorTip]="hasFieldError('confirmPassword') ? getFieldError('confirmPassword') : ''">
+                <nz-input-group nzPrefixIcon="lock">
+                  <input 
+                    nz-input 
+                    [type]="confirmPasswordVisible() ? 'text' : 'password'"
+                    formControlName="confirmPassword" 
+                    placeholder="Confirme su contraseña"
+                    autocomplete="new-password"
+                    [class.error-input]="hasFieldError('confirmPassword')">
+                  <span 
+                    nz-input-suffix
+                    class="password-toggle"
+                    (click)="toggleConfirmPasswordVisibility()">
+                    <i 
+                      nz-icon 
+                      [nzType]="confirmPasswordVisible() ? 'eye-invisible' : 'eye'" 
+                      nzTheme="outline">
+                    </i>
+                  </span>
+                </nz-input-group>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        }
+
+        <!-- Paso 3: Confirmación -->
+        @if (currentStep() === 2) {
+          <div class="step-content">
+            <h3 class="step-title">Confirmar Datos</h3>
+            
+            <div class="confirmation-data">
+              <div class="data-group">
+                <h4>Información Personal</h4>
+                <div class="data-item">
+                  <label>Nombre:</label>
+                  <span>{{ registerForm.get('firstName')?.value }}</span>
+                </div>
+                <div class="data-item">
+                  <label>Apellido:</label>
+                  <span>{{ registerForm.get('lastName')?.value }}</span>
+                </div>
+                <div class="data-item">
+                  <label>Email:</label>
+                  <span>{{ registerForm.get('email')?.value }}</span>
+                </div>
+              </div>
+              
+              <div class="data-group">
+                <h4>Credenciales</h4>
+                <div class="data-item">
+                  <label>Usuario:</label>
+                  <span>{{ registerForm.get('username')?.value }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Botones de navegación -->
+        <div class="form-actions">
+          @if (currentStep() > 0) {
+            <button 
+              nz-button 
+              nzType="default" 
+              type="button"
+              (click)="previousStep()">
+              <i nz-icon nzType="left" nzTheme="outline"></i>
+              Anterior
+            </button>
+          }
+
+          @if (currentStep() < steps.length - 1) {
+            <button 
+              nz-button 
+              nzType="primary" 
+              type="button"
+              (click)="nextStep()">
+              Siguiente
+              <i nz-icon nzType="right" nzTheme="outline"></i>
+            </button>
+          }
+
+          @if (currentStep() === steps.length - 1) {
+            <button 
+              nz-button 
+              nzType="primary" 
+              [nzLoading]="loading()"
+              [disabled]="!registerForm.valid"
+              type="submit"
+              class="register-button">
+              <i nz-icon nzType="user-add" nzTheme="outline"></i>
+              Crear Cuenta
+            </button>
+          }
+        </div>
+
+        <!-- Link al login -->
+        <div class="login-section">
+          <p class="login-text">
+            ¿Ya tienes una cuenta?
+            <a 
+              class="login-link" 
+              (click)="goToLogin()">
+              Inicia sesión aquí
+            </a>
+          </p>
+        </div>
+      </form>
+    </nz-card>
+  </div>
+</div>

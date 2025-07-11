@@ -1,0 +1,7 @@
+ @if (showMainLayout()) {
+      <!-- Layout principal con sidebar, header y footer -->
+      <app-main-layout></app-main-layout>
+    } @else {
+      <!-- Solo router-outlet para rutas de autenticación -->
+      <router-outlet></router-outlet>
+    }

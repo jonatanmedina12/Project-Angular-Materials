@@ -1,0 +1,132 @@
+ .app-header {
+      background: #fff;
+      padding: 0;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      z-index: 999;
+      position: relative;
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+        height: 64px;
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex: 1;
+
+          .trigger {
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 8px;
+            border-radius: 4px;
+
+            &:hover {
+              color: #1890ff;
+              background: rgba(24, 144, 255, 0.1);
+            }
+          }
+
+          .breadcrumb {
+            margin: 0;
+            
+            ::ng-deep {
+              .ant-breadcrumb-link {
+                color: #8c8c8c;
+                
+                &:hover {
+                  color: #1890ff;
+                }
+              }
+              
+              .ant-breadcrumb-separator {
+                color: #d9d9d9;
+              }
+            }
+          }
+
+          .page-title {
+            margin-left: auto;
+            
+            h1 {
+              margin: 0;
+              font-size: 18px;
+              font-weight: 600;
+              color: #262626;
+            }
+          }
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .action-button {
+              width: 36px;
+              height: 36px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #8c8c8c;
+              transition: all 0.3s;
+
+              &:hover {
+                color: #1890ff;
+                background: rgba(24, 144, 255, 0.1);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Responsive design
+    @media (max-width: 768px) {
+      .app-header {
+        .header-content {
+          padding: 0 16px;
+
+          .header-left {
+            .page-title {
+              display: none;
+            }
+
+            .breadcrumb {
+              ::ng-deep {
+                .ant-breadcrumb-link {
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+
+          .header-right {
+            .header-actions {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 480px) {
+      .app-header {
+        .header-content {
+          .header-left {
+            .breadcrumb {
+              display: none;
+            }
+          }
+        }
+      }
+    }

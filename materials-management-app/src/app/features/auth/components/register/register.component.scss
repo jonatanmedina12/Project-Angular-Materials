@@ -506,3 +506,225 @@
     }
   }
 }
+// Estilos para requisitos de contraseña
+.password-requirements {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #f6f6f6;
+  border-radius: 4px;
+  border-left: 3px solid #faad14;
+
+  small {
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      font-size: 12px;
+      color: #ff4d4f;
+      margin: 2px 0;
+      transition: color 0.3s ease;
+
+      &.valid {
+        color: #52c41a;
+      }
+    }
+  }
+}
+
+// Estilos para el indicador de pasos con errores
+.ant-steps-item {
+  &.ant-steps-item-error {
+    .ant-steps-item-icon {
+      background-color: #ff4d4f;
+      border-color: #ff4d4f;
+      
+      .ant-steps-icon {
+        color: #fff;
+      }
+    }
+    
+    .ant-steps-item-title {
+      color: #ff4d4f;
+    }
+  }
+}
+
+// Advertencia de validación en confirmación
+.validation-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #fff7e6;
+  border: 1px solid #ffd591;
+  border-radius: 6px;
+  margin-top: 16px;
+  
+  i {
+    color: #fa8c16;
+    font-size: 16px;
+  }
+  
+  span {
+    color: #d46b08;
+    font-size: 14px;
+  }
+}
+
+// Mejoras para indicador de fortaleza de contraseña
+.password-strength {
+  margin-top: 8px;
+  
+  .strength-bar {
+    height: 4px;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    
+    .strength-fill {
+      height: 100%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+    
+    &.weak .strength-fill {
+      width: 33%;
+      background-color: #ff4d4f;
+    }
+    
+    &.medium .strength-fill {
+      width: 66%;
+      background-color: #fa8c16;
+    }
+    
+    &.strong .strength-fill {
+      width: 100%;
+      background-color: #52c41a;
+    }
+  }
+  
+  .strength-text {
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.weak {
+      color: #ff4d4f;
+    }
+    
+    &.medium {
+      color: #fa8c16;
+    }
+    
+    &.strong {
+      color: #52c41a;
+    }
+  }
+}
+
+// Estilos para campos con errores
+.error-input {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+}
+
+// Mejoras para los datos de confirmación
+.confirmation-data {
+  .data-group {
+    margin-bottom: 24px;
+    
+    h4 {
+      color: #262626;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .data-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #fafafa;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      label {
+        font-weight: 500;
+        color: #666;
+        min-width: 120px;
+      }
+      
+      span {
+        color: #262626;
+        word-break: break-word;
+        text-align: right;
+        flex: 1;
+        margin-left: 16px;
+      }
+    }
+  }
+}
+
+// Animaciones para transiciones de pasos
+.step-content {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Mejoras responsivas adicionales
+@media (max-width: 576px) {
+  .password-requirements {
+    ul li {
+      font-size: 11px;
+    }
+  }
+  
+  .confirmation-data {
+    .data-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      
+      label {
+        min-width: auto;
+      }
+      
+      span {
+        text-align: left;
+        margin-left: 0;
+      }
+    }
+  }
+  
+  .validation-warning {
+    flex-direction: column;
+    text-align: center;
+    
+    span {
+      font-size: 13px;
+    }
+  }
+}

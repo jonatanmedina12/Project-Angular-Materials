@@ -13,7 +13,7 @@
       <p class="register-subtitle">Sistema de Gestión de Materiales</p>
     </div>
 
-    <!-- Mensaje de error -->
+    <!-- Mensaje de error global -->
     @if (error()) {
       <div class="error-container">
         <app-error-message
@@ -33,7 +33,8 @@
           @for (step of steps; track $index) {
             <nz-step 
               [nzTitle]="step.title" 
-              [nzDescription]="step.description">
+              [nzDescription]="step.description"
+              [nzStatus]="getStepStatus($index)">
             </nz-step>
           }
         </nz-steps>
@@ -50,7 +51,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Nombre</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('firstName') ? getFieldError('firstName') : ''">
+                [nzErrorTip]="hasFieldError('firstName') ? getFieldError('firstName') : ''"
+                [nzValidateStatus]="hasFieldError('firstName') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="user">
                   <input 
                     nz-input 
@@ -66,7 +68,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Apellido</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('lastName') ? getFieldError('lastName') : ''">
+                [nzErrorTip]="hasFieldError('lastName') ? getFieldError('lastName') : ''"
+                [nzValidateStatus]="hasFieldError('lastName') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="user">
                   <input 
                     nz-input 
@@ -82,7 +85,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Email</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('email') ? getFieldError('email') : ''">
+                [nzErrorTip]="hasFieldError('email') ? getFieldError('email') : ''"
+                [nzValidateStatus]="hasFieldError('email') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="mail">
                   <input 
                     nz-input 
@@ -106,7 +110,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Usuario</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('username') ? getFieldError('username') : ''">
+                [nzErrorTip]="hasFieldError('username') ? getFieldError('username') : ''"
+                [nzValidateStatus]="hasFieldError('username') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="user">
                   <input 
                     nz-input 
@@ -122,7 +127,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Contraseña</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('password') ? getFieldError('password') : ''">
+                [nzErrorTip]="hasFieldError('password') ? getFieldError('password') : ''"
+                [nzValidateStatus]="hasFieldError('password') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="lock">
                   <input 
                     nz-input 
@@ -143,8 +149,8 @@
                   </span>
                 </nz-input-group>
                 
-                <!-- Indicador de fortaleza -->
-                @if (registerForm.get('password')?.value) {
+                <!-- Indicador de fortaleza mejorado -->
+                @if (registerForm.get('password')?.value && !hasFieldError('password')) {
                   <div class="password-strength">
                     <div class="strength-bar" [class]="getPasswordStrength()">
                       <div class="strength-fill"></div>
@@ -158,6 +164,20 @@
                     </span>
                   </div>
                 }
+
+                <!-- Ayuda de formato de contraseña -->
+                @if (registerForm.get('password')?.touched && !registerForm.get('password')?.valid) {
+                  <div class="password-requirements">
+                    <small>La contraseña debe contener:</small>
+                    <ul>
+                      <li [class.valid]="passwordHasLowercase()">• Al menos 1 letra minúscula</li>
+                      <li [class.valid]="passwordHasUppercase()">• Al menos 1 letra mayúscula</li>
+                      <li [class.valid]="passwordHasNumber()">• Al menos 1 número</li>
+                      <li [class.valid]="passwordHasSpecialChar()">• Al menos 1 carácter especial ($!%*?&)</li>
+                      <li [class.valid]="passwordHasMinLength()">• Mínimo 8 caracteres</li>
+                    </ul>
+                  </div>
+                }
               </nz-form-control>
             </nz-form-item>
 
@@ -165,7 +185,8 @@
             <nz-form-item>
               <nz-form-label nzRequired>Confirmar Contraseña</nz-form-label>
               <nz-form-control 
-                [nzErrorTip]="hasFieldError('confirmPassword') ? getFieldError('confirmPassword') : ''">
+                [nzErrorTip]="hasFieldError('confirmPassword') ? getFieldError('confirmPassword') : ''"
+                [nzValidateStatus]="hasFieldError('confirmPassword') ? 'error' : ''">
                 <nz-input-group nzPrefixIcon="lock">
                   <input 
                     nz-input 
@@ -219,6 +240,14 @@
                   <span>{{ registerForm.get('username')?.value }}</span>
                 </div>
               </div>
+              
+              <!-- Advertencia si hay errores pendientes -->
+              @if (!registerForm.valid) {
+                <div class="validation-warning">
+                  <i nz-icon nzType="warning" nzTheme="outline"></i>
+                  <span>Hay campos con errores que deben corregirse antes de continuar</span>
+                </div>
+              }
             </div>
           </div>
         }
@@ -274,10 +303,10 @@
         </div>
       </form>
     </nz-card>
-        <!-- Footer -->
+    
+    <!-- Footer -->
     <div class="login-footer">
       <p>&copy; {{ currentYear }} Sistema de Gestión de Materiales. Todos los derechos reservados.</p>
     </div>
   </div>
- 
 </div>

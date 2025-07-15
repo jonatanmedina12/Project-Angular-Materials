@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -17,7 +17,8 @@ import { Router } from '@angular/router';
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-   imports: [
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     NzFormModule,
     NzInputModule,
@@ -29,10 +30,10 @@ import { Router } from '@angular/router';
   ],
   standalone: true
 })
-export class RegisterComponent  {
+export class RegisterComponent {
   readonly currentYear = new Date().getFullYear();
 
- registerForm: FormGroup;
+  registerForm: FormGroup;
   currentStep = signal(0);
   passwordVisible = signal(false);
   confirmPasswordVisible = signal(false);
@@ -45,6 +46,9 @@ export class RegisterComponent  {
   // Computed signals
   readonly loading = computed(() => this.authService.loading());
   readonly error = computed(() => this.authService.error());
+
+  // Regex que coincide exactamente con el backend
+  private readonly PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
   // Pasos del registro
   readonly steps = [
@@ -70,7 +74,7 @@ export class RegisterComponent  {
   }
 
   /**
-   * Crea el formulario de registro
+   * Crea el formulario de registro con validaciones que coinciden con el backend
    */
   private createRegisterForm(): FormGroup {
     return this.fb.group({
@@ -78,27 +82,15 @@ export class RegisterComponent  {
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       username: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
-      password: ['', [Validators.required, Validators.minLength(8), this.passwordStrengthValidator]],
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(8),
+        Validators.pattern(this.PASSWORD_REGEX)
+      ]],
       confirmPassword: ['', [Validators.required]]
     }, {
       validators: this.passwordMatchValidator
     });
-  }
-
-  /**
-   * Validador personalizado para la fortaleza de contraseña
-   */
-  private passwordStrengthValidator(control: AbstractControl): {[key: string]: any} | null {
-    const value = control.value;
-    if (!value) return null;
-
-    const hasUpperCase = /[A-Z]/.test(value);
-    const hasLowerCase = /[a-z]/.test(value);
-    const hasNumeric = /[0-9]/.test(value);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
-
-    const isValid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar;
-    return isValid ? null : { passwordStrength: true };
   }
 
   /**
@@ -114,7 +106,7 @@ export class RegisterComponent  {
   }
 
   /**
-   * Avanza al siguiente paso
+   * Avanza al siguiente paso validando campos
    */
   nextStep(): void {
     if (this.isCurrentStepValid()) {
@@ -146,7 +138,7 @@ export class RegisterComponent  {
   }
 
   /**
-   * Marca los campos del paso actual como tocados
+   * Marca los campos del paso actual como tocados para mostrar errores
    */
   private markCurrentStepTouched(): void {
     const currentStepFields = this.steps[this.currentStep()].fields;
@@ -159,17 +151,17 @@ export class RegisterComponent  {
   }
 
   /**
-   * Maneja el envío del formulario
+   * Maneja el envío del formulario con mejor manejo de errores
    */
   onSubmit(): void {
     if (this.registerForm.valid) {
       this.authService.clearError();
       
       const registerData: RegisterRequest = {
-        firstName: this.registerForm.value.firstName,
-        lastName: this.registerForm.value.lastName,
-        email: this.registerForm.value.email,
-        username: this.registerForm.value.username,
+        firstName: this.registerForm.value.firstName.trim(),
+        lastName: this.registerForm.value.lastName.trim(),
+        email: this.registerForm.value.email.trim().toLowerCase(),
+        username: this.registerForm.value.username.trim(),
         password: this.registerForm.value.password,
         confirmPassword: this.registerForm.value.confirmPassword
       };
@@ -181,10 +173,60 @@ export class RegisterComponent  {
         },
         error: (error) => {
           console.error('Error en registro:', error);
+          
+          // Manejo específico para errores de validación del backend
+          if (error.status === 400 && error.error?.errors) {
+            const backendErrors = error.error.errors;
+            this.handleBackendValidationErrors(backendErrors);
+          } else {
+            // Error genérico
+            const errorMessage = error.error?.message || 'Error inesperado durante el registro';
+            this.messageService.error(errorMessage);
+          }
         }
       });
     } else {
       this.markFormGroupTouched();
+      this.messageService.warning('Por favor, complete todos los campos correctamente');
+    }
+  }
+
+  /**
+   * Maneja errores de validación del backend
+   */
+  private handleBackendValidationErrors(errors: any[]): void {
+    errors.forEach(error => {
+      const field = error.field;
+      const message = error.defaultMessage;
+      
+      if (this.registerForm.get(field)) {
+        // Agregar error personalizado al control
+        this.registerForm.get(field)?.setErrors({ 
+          backendError: { message } 
+        });
+      }
+    });
+    
+    // Volver al paso que contiene el error
+    this.goToStepWithError();
+  }
+
+  /**
+   * Navega al paso que contiene errores
+   */
+  private goToStepWithError(): void {
+    for (let i = 0; i < this.steps.length - 1; i++) {
+      const stepFields = this.steps[i].fields;
+      const hasError = stepFields.some(field => {
+        const control = this.registerForm.get(field);
+        return control?.invalid;
+      });
+      
+      if (hasError) {
+        this.currentStep.set(i);
+        this.markCurrentStepTouched();
+        break;
+      }
     }
   }
 
@@ -227,6 +269,11 @@ export class RegisterComponent  {
   getFieldError(fieldName: string): string {
     const field = this.registerForm.get(fieldName);
     
+    // Error del backend tiene prioridad
+    if (field?.hasError('backendError')) {
+      return field.errors?.['backendError']?.message;
+    }
+    
     if (field?.hasError('required')) {
       return `${this.getFieldLabel(fieldName)} es requerido`;
     }
@@ -237,15 +284,16 @@ export class RegisterComponent  {
     }
     
     if (field?.hasError('email')) {
-      return 'Email inválido';
+      return 'Formato de email inválido';
     }
     
-    if (field?.hasError('pattern') && fieldName === 'username') {
-      return 'Solo letras, números y guión bajo';
-    }
-    
-    if (field?.hasError('passwordStrength')) {
-      return 'Debe contener mayúscula, minúscula, número y carácter especial';
+    if (field?.hasError('pattern')) {
+      if (fieldName === 'username') {
+        return 'Solo letras, números y guión bajo permitidos';
+      }
+      if (fieldName === 'password') {
+        return 'La contraseña debe contener al menos: 1 minúscula, 1 mayúscula, 1 número y 1 carácter especial (@$!%*?&)';
+      }
     }
     
     if (fieldName === 'confirmPassword' && this.registerForm.hasError('passwordMismatch')) {
@@ -271,19 +319,21 @@ export class RegisterComponent  {
   }
 
   /**
-   * Obtiene la fortaleza de la contraseña
+   * Obtiene la fortaleza de la contraseña basada en las mismas reglas del backend
    */
   getPasswordStrength(): string {
     const password = this.registerForm.get('password')?.value || '';
     
     if (password.length === 0) return '';
     
-    let score = 0;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
-    if (password.length >= 8) score++;
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumeric = /\d/.test(password);
+    const hasSpecialChar = /[@$!%*?&]/.test(password);
+    const hasMinLength = password.length >= 8;
+    
+    const validCriteria = [hasLowerCase, hasUpperCase, hasNumeric, hasSpecialChar, hasMinLength];
+    const score = validCriteria.filter(criteria => criteria).length;
     
     if (score < 3) return 'weak';
     if (score < 5) return 'medium';
@@ -304,4 +354,54 @@ export class RegisterComponent  {
     this.authService.clearError();
   }
 
+  /**
+   * Obtiene el estado del paso para el indicador visual
+   */
+  getStepStatus(stepIndex: number): string {
+    const currentStep = this.currentStep();
+    
+    if (stepIndex < currentStep) {
+      // Verificar si el paso completado tiene errores
+      const stepFields = this.steps[stepIndex].fields;
+      const hasErrors = stepFields.some(field => {
+        const control = this.registerForm.get(field);
+        return control?.invalid;
+      });
+      return hasErrors ? 'error' : 'finish';
+    }
+    
+    if (stepIndex === currentStep) {
+      return 'process';
+    }
+    
+    return 'wait';
+  }
+
+  /**
+   * Métodos para verificar criterios específicos de contraseña
+   */
+  passwordHasLowercase(): boolean {
+    const password = this.registerForm.get('password')?.value || '';
+    return /[a-z]/.test(password);
+  }
+
+  passwordHasUppercase(): boolean {
+    const password = this.registerForm.get('password')?.value || '';
+    return /[A-Z]/.test(password);
+  }
+
+  passwordHasNumber(): boolean {
+    const password = this.registerForm.get('password')?.value || '';
+    return /\d/.test(password);
+  }
+
+  passwordHasSpecialChar(): boolean {
+    const password = this.registerForm.get('password')?.value || '';
+    return /[@$!%*?&]/.test(password);
+  }
+
+  passwordHasMinLength(): boolean {
+    const password = this.registerForm.get('password')?.value || '';
+    return password.length >= 8;
+  }
 }

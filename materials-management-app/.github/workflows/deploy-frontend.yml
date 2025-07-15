@@ -1,0 +1,143 @@
+name: Deploy Angular Frontend to Railway
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: '20'
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  # Job para testing y linting
+  test:
+    name: Test Angular Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint --if-present
+        continue-on-error: true
+
+      - name: Run unit tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+        continue-on-error: true
+
+  # Job para build y análisis
+  build:
+    name: Build Angular Application
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for development
+        run: npm run build:dev
+        if: github.ref == 'refs/heads/develop'
+
+      - name: Build for production
+        run: npm run build:prod
+        if: github.ref == 'refs/heads/main'
+
+      - name: Analyze bundle size
+        run: |
+          npx webpack-bundle-analyzer dist/materials-management-app/stats.json --mode json > bundle-analysis.json
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: angular-build
+          path: dist/
+          retention-days: 7
+
+  # Job para deploy a Railway
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        run: |
+          railway login --token $RAILWAY_TOKEN
+          railway up --service "materials-frontend"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Wait for deployment
+        run: |
+          echo "⏳ Esperando que el despliegue se complete..."
+          sleep 60
+
+      - name: Health check
+        run: |
+          echo "🔍 Verificando health check..."
+          # Puedes agregar aquí un health check específico si tienes la URL
+          # curl -f https://tu-app.railway.app/health.json || exit 1
+
+      - name: Deployment notification
+        run: |
+          echo "✅ Frontend desplegado exitosamente"
+          echo "🌐 Aplicación disponible en Railway"
+          echo "📱 Versión: ${{ github.sha }}"
+
+  # Job para notificaciones (opcional)
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+
+    steps:
+      - name: Notify success
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "🎉 Despliegue exitoso!"
+          echo "✅ Frontend Angular desplegado correctamente"
+          
+      - name: Notify failure
+        if: needs.deploy.result == 'failure'
+        run: |
+          echo "❌ Error en el despliegue"
+          echo "🔧 Revisar logs para más detalles"
